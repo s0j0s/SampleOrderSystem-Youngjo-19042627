@@ -15,7 +15,7 @@ public class ProductionRepository {
     private final DatabaseManager dbManager;
 
     public void save(Production production) {
-        String sql = "INSERT INTO PRODUCTION (PRODUCTION_ID, ORDER_ID, SAMPLE_ID, PRODUCTION_QTY, ESTIMATED_HOURS, COMPLETED) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO PRODUCTION (PRODUCTION_ID, ORDER_ID, SAMPLE_ID, PRODUCTION_QTY, ESTIMATED_HOURS, COMPLETED, STARTED_AT, SHORTAGE_QTY) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, production.getProductionId());
@@ -24,6 +24,8 @@ public class ProductionRepository {
             pstmt.setInt(4, production.getProductionQty());
             pstmt.setLong(5, production.getEstimatedHours());
             pstmt.setBoolean(6, production.isCompleted());
+            pstmt.setLong(7, production.getStartedAt());
+            pstmt.setInt(8, production.getShortageQty());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("생산 저장 실패: " + production.getProductionId(), e);
@@ -65,7 +67,8 @@ public class ProductionRepository {
     public List<Production> findPendingByFifo() {
         String sql = """
                 SELECT p.PRODUCTION_ID, p.ORDER_ID, p.SAMPLE_ID,
-                       p.PRODUCTION_QTY, p.ESTIMATED_HOURS, p.COMPLETED
+                       p.PRODUCTION_QTY, p.ESTIMATED_HOURS, p.COMPLETED,
+                       p.STARTED_AT, p.SHORTAGE_QTY
                 FROM PRODUCTION p
                 JOIN ORDERS o ON p.ORDER_ID = o.ORDER_ID
                 WHERE p.COMPLETED = FALSE
@@ -116,7 +119,9 @@ public class ProductionRepository {
                 rs.getString("SAMPLE_ID"),
                 rs.getInt("PRODUCTION_QTY"),
                 rs.getLong("ESTIMATED_HOURS"),
-                rs.getBoolean("COMPLETED")
+                rs.getBoolean("COMPLETED"),
+                rs.getLong("STARTED_AT"),
+                rs.getInt("SHORTAGE_QTY")
         );
     }
 }

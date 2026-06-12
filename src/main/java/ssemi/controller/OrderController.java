@@ -62,13 +62,14 @@ public class OrderController {
             orderRepository.updateStatus(orderId, OrderStatus.CONFIRMED);
             order.setStatus(OrderStatus.CONFIRMED);
         } else {
-            int productionQty = (int) Math.ceil(
-                    order.getQuantity() / (sample.getYield() * 0.9));
+            int shortageQty = order.getQuantity() - sample.getStock();
+            int productionQty = (int) Math.ceil(shortageQty / (sample.getYield() * 0.9));
             long estimatedHours = (long) sample.getProductionTime() * productionQty;
             String productionId = String.format("PRD-%04d", productionRepository.nextSequence());
             productionRepository.save(new Production(
                     productionId, orderId, sample.getSampleId(),
-                    productionQty, estimatedHours, false));
+                    productionQty, estimatedHours, false,
+                    System.currentTimeMillis(), shortageQty));
             orderRepository.updateStatus(orderId, OrderStatus.PRODUCING);
             order.setStatus(OrderStatus.PRODUCING);
         }

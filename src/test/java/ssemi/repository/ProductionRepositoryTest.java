@@ -50,7 +50,7 @@ class ProductionRepositoryTest {
 
     @Test
     void 생산레코드_저장_후_조회_성공() {
-        Production production = new Production("PRD-0001", "ORD-0001", "S-001", 13, 26L, false);
+        Production production = new Production("PRD-0001", "ORD-0001", "S-001", 13, 26L, false, System.currentTimeMillis(), 5);
         productionRepository.save(production);
 
         Optional<Production> found = productionRepository.findById("PRD-0001");
@@ -63,7 +63,7 @@ class ProductionRepositoryTest {
 
     @Test
     void 주문ID로_생산레코드_조회() {
-        productionRepository.save(new Production("PRD-0001", "ORD-0001", "S-001", 13, 26L, false));
+        productionRepository.save(new Production("PRD-0001", "ORD-0001", "S-001", 13, 26L, false, System.currentTimeMillis(), 5));
 
         Optional<Production> found = productionRepository.findByOrderId("ORD-0001");
         assertTrue(found.isPresent());
@@ -78,8 +78,8 @@ class ProductionRepositoryTest {
 
     @Test
     void 미완료_목록_FIFO_순서_검증() {
-        productionRepository.save(new Production("PRD-0001", "ORD-0001", "S-001", 13, 26L, false));
-        productionRepository.save(new Production("PRD-0002", "ORD-0002", "S-001", 25, 50L, false));
+        productionRepository.save(new Production("PRD-0001", "ORD-0001", "S-001", 13, 26L, false, System.currentTimeMillis(), 5));
+        productionRepository.save(new Production("PRD-0002", "ORD-0002", "S-001", 25, 50L, false, System.currentTimeMillis(), 10));
 
         List<Production> pending = productionRepository.findPendingByFifo();
 
@@ -90,8 +90,8 @@ class ProductionRepositoryTest {
 
     @Test
     void 완료_처리_후_pending_목록_제외() {
-        productionRepository.save(new Production("PRD-0001", "ORD-0001", "S-001", 13, 26L, false));
-        productionRepository.save(new Production("PRD-0002", "ORD-0002", "S-001", 25, 50L, false));
+        productionRepository.save(new Production("PRD-0001", "ORD-0001", "S-001", 13, 26L, false, System.currentTimeMillis(), 5));
+        productionRepository.save(new Production("PRD-0002", "ORD-0002", "S-001", 25, 50L, false, System.currentTimeMillis(), 10));
 
         productionRepository.complete("PRD-0001");
 
@@ -103,7 +103,7 @@ class ProductionRepositoryTest {
     @Test
     void 시퀀스_번호는_저장된_개수_더하기_1() {
         assertEquals(1, productionRepository.nextSequence());
-        productionRepository.save(new Production("PRD-0001", "ORD-0001", "S-001", 13, 26L, false));
+        productionRepository.save(new Production("PRD-0001", "ORD-0001", "S-001", 13, 26L, false, System.currentTimeMillis(), 5));
         assertEquals(2, productionRepository.nextSequence());
     }
 }

@@ -63,11 +63,16 @@ public class DatabaseManager {
                 )
                 """;
 
+        String alterProductionStartedAt = "ALTER TABLE PRODUCTION ADD COLUMN IF NOT EXISTS STARTED_AT BIGINT DEFAULT 0";
+        String alterProductionShortageQty = "ALTER TABLE PRODUCTION ADD COLUMN IF NOT EXISTS SHORTAGE_QTY INT DEFAULT 0";
+
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(createSample);
             stmt.execute(createOrders);
             stmt.execute(createProduction);
+            stmt.execute(alterProductionStartedAt);
+            stmt.execute(alterProductionShortageQty);
         } catch (SQLException e) {
             throw new RuntimeException("DB 스키마 초기화 실패", e);
         }

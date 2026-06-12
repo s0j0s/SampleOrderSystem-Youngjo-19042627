@@ -36,7 +36,7 @@ class ProductionControllerTest {
 
     @BeforeEach
     void setUp() {
-        pendingProd   = new Production("PRD-0001", "ORD-0001", "S-001", 13, 26L, false);
+        pendingProd   = new Production("PRD-0001", "ORD-0001", "S-001", 13, 26L, false, System.currentTimeMillis(), 5);
         producingOrder = new Order("ORD-0001", "S-001", "CUST-001", 10, OrderStatus.PRODUCING, 0L);
         sample        = new Sample("S-001", "GaN", "4인치", 0, 0.9, 2);
     }
@@ -69,7 +69,7 @@ class ProductionControllerTest {
     @Test
     void 잉여없을때_updateStock_미호출() {
         // prodQty == orderQty → surplus=0 → updateStock 호출 없음
-        Production noSurplusProd = new Production("PRD-0001", "ORD-0001", "S-001", 10, 20L, false);
+        Production noSurplusProd = new Production("PRD-0001", "ORD-0001", "S-001", 10, 20L, false, System.currentTimeMillis(), 10);
         when(productionRepository.findById("PRD-0001")).thenReturn(Optional.of(noSurplusProd));
         when(orderRepository.findById("ORD-0001")).thenReturn(Optional.of(producingOrder));
         when(sampleRepository.findById("S-001")).thenReturn(Optional.of(sample));
@@ -81,7 +81,7 @@ class ProductionControllerTest {
 
     @Test
     void 이미_완료된_생산_완료_시_예외() {
-        Production completed = new Production("PRD-0001", "ORD-0001", "S-001", 13, 26L, true);
+        Production completed = new Production("PRD-0001", "ORD-0001", "S-001", 13, 26L, true, System.currentTimeMillis(), 5);
         when(productionRepository.findById("PRD-0001")).thenReturn(Optional.of(completed));
 
         assertThrows(IllegalStateException.class,

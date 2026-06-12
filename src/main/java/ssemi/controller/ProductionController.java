@@ -22,6 +22,18 @@ public class ProductionController {
         return productionRepository.findPendingByFifo();
     }
 
+    public void checkAndCompleteExpired() {
+        long now = System.currentTimeMillis();
+        for (Production p : productionRepository.findPendingByFifo()) {
+            if (now >= p.getStartedAt() + p.getEstimatedHours() * 3_600_000L) {
+                try {
+                    completeProduction(p.getProductionId());
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
     public Production completeProduction(String productionId) {
         Production production = productionRepository.findById(productionId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 생산: " + productionId));
