@@ -14,6 +14,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductionController {
 
+    private static final long MILLIS_PER_HOUR = 3_600_000L;
+
     private final ProductionRepository productionRepository;
     private final OrderRepository orderRepository;
     private final SampleRepository sampleRepository;
@@ -25,10 +27,11 @@ public class ProductionController {
     public void checkAndCompleteExpired() {
         long now = System.currentTimeMillis();
         for (Production p : productionRepository.findPendingByFifo()) {
-            if (now >= p.getStartedAt() + p.getEstimatedHours() * 3_600_000L) {
+            if (now >= p.getStartedAt() + p.getEstimatedHours() * MILLIS_PER_HOUR) {
                 try {
                     completeProduction(p.getProductionId());
-                } catch (Exception ignored) {
+                } catch (Exception e) {
+                    // 한 건 실패가 전체 큐 처리를 중단하지 않도록 의도적으로 무시
                 }
             }
         }

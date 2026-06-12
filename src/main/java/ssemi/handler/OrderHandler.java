@@ -75,15 +75,26 @@ public class OrderHandler {
     }
 
     private void processOrder() {
+        Order selected = selectReservedOrder();
+        if (selected == null) return;
+        dispatchApprovalAction(selected);
+        mainView.readEnter();
+    }
+
+    /** RESERVED 주문 목록을 표시하고 사용자가 선택한 주문을 반환. 취소/빈 목록이면 null. */
+    private Order selectReservedOrder() {
         List<Order>  reserved = orderController.getOrdersByStatus(OrderStatus.RESERVED);
         List<Sample> samples  = sampleController.getAllSamples();
         orderView.showOrderListNumbered(reserved, samples, "메인 > 주문 승인/거절 > 주문 처리");
-        if (reserved.isEmpty()) { mainView.readEnter(); return; }
+        if (reserved.isEmpty()) { mainView.readEnter(); return null; }
 
         int orderIdx = mainView.readListChoice(reserved.size());
-        if (orderIdx == 0) return;
+        if (orderIdx == 0) return null;
+        return reserved.get(orderIdx - 1);
+    }
 
-        Order  selectedOrder  = reserved.get(orderIdx - 1);
+    /** 선택된 주문의 상세 정보를 표시하고 승인/거절 액션을 실행. */
+    private void dispatchApprovalAction(Order selectedOrder) {
         Sample selectedSample = sampleController.getSampleById(selectedOrder.getSampleId()).orElse(null);
         if (selectedSample == null) {
             mainView.showError("시료 정보를 찾을 수 없습니다.");
@@ -99,7 +110,6 @@ public class OrderHandler {
             case 0 -> mainView.showInfo("처리를 취소했습니다.");
             default -> mainView.showError("유효하지 않은 선택입니다.");
         }
-        mainView.readEnter();
     }
 
     private void approveOrder(String orderId) {

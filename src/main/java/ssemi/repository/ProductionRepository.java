@@ -109,7 +109,7 @@ public class ProductionRepository {
         } catch (SQLException e) {
             throw new RuntimeException("생산 시퀀스 조회 실패", e);
         }
-        return 1;
+        return 1; // rs.next() 실패 시 (테이블 비어 있음)
     }
 
     private Production mapRow(ResultSet rs) throws SQLException {

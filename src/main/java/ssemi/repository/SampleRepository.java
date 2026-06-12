@@ -100,7 +100,7 @@ public class SampleRepository {
         } catch (SQLException e) {
             throw new RuntimeException("시료 시퀀스 조회 실패", e);
         }
-        return 1;
+        return 1; // rs.next() 실패 시 (테이블 비어 있음)
     }
 
     public List<Sample> searchByName(String keyword) {

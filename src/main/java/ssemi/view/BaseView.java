@@ -29,6 +29,7 @@ public abstract class BaseView {
     protected static final String SEP_THIN  = "--------------------------------------------------------------------------------";
 
     private static final DateTimeFormatter DT_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private static final long REFRESH_INTERVAL_MILLIS = 2_500;
 
     // stdin은 하나이므로 static 공유 스캐너 사용
     protected static final Scanner scanner = new Scanner(System.in, java.nio.charset.StandardCharsets.UTF_8);
@@ -209,7 +210,7 @@ public abstract class BaseView {
             System.out.print(CLEAR);
             renderer.run();
             System.out.println("\n  [Q + Enter] 돌아가기");
-            long deadline = System.currentTimeMillis() + 2_500;
+            long deadline = System.currentTimeMillis() + REFRESH_INTERVAL_MILLIS;
             while (System.currentTimeMillis() < deadline) {
                 try {
                     if (System.in.available() > 0) {

@@ -25,12 +25,12 @@ public class ProductionView extends BaseView {
             Sample s = sm.get(p.getSampleId());
             if (o == null || s == null) continue;
 
-            double elapsedH = (now - p.getStartedAt()) / 3_600_000.0;
+            double elapsedH = elapsedHours(p, now);
             double totalH   = p.getEstimatedHours();
             double ratio    = totalH > 0 ? Math.min(1.0, elapsedH / totalH) : 1.0;
             double remainH  = Math.max(0.0, totalH - elapsedH);
             int    curQty   = (int)(ratio * p.getProductionQty());
-            long   endAt    = p.getStartedAt() + p.getEstimatedHours() * 3_600_000L;
+            long   endAt    = estimatedEndMillis(p);
 
             System.out.println(SEP_THIN);
             System.out.printf("  ⏳ %-8s  ->  %-8s%n", p.getProductionId(), o.getOrderId());
@@ -69,8 +69,8 @@ public class ProductionView extends BaseView {
             Sample s     = sm.get(p.getSampleId());
             if (o == null || s == null) continue;
 
-            double remainH = Math.max(0.0, p.getEstimatedHours() - (now - p.getStartedAt()) / 3_600_000.0);
-            long   endAt   = p.getStartedAt() + p.getEstimatedHours() * 3_600_000L;
+            double remainH = Math.max(0.0, p.getEstimatedHours() - elapsedHours(p, now));
+            long   endAt   = estimatedEndMillis(p);
 
             System.out.printf("  [ %d순위 ]%n", i + 1);
             System.out.println(SEP_THIN);
@@ -85,5 +85,13 @@ public class ProductionView extends BaseView {
             System.out.printf("  완료 예정: %s  (남은 %.1fh)%n", fmtDt(endAt), remainH);
             System.out.println();
         }
+    }
+
+    private double elapsedHours(Production p, long now) {
+        return (now - p.getStartedAt()) / 3_600_000.0;
+    }
+
+    private long estimatedEndMillis(Production p) {
+        return p.getStartedAt() + p.getEstimatedHours() * 3_600_000L;
     }
 }

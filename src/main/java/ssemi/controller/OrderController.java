@@ -15,6 +15,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OrderController {
 
+    private static final double YIELD_SAFETY_MARGIN = 0.9;
+
     private final OrderRepository orderRepository;
     private final SampleRepository sampleRepository;
     private final ProductionRepository productionRepository;
@@ -42,38 +44,37 @@ public class OrderController {
         return orderRepository.findByStatus(status);
     }
 
-    /**
-     * 주문 승인: 재고 >= 수량 → CONFIRMED (재고 차감)
-     *           재고 <  수량 → PRODUCING
-     */
     public Order approveOrder(String orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주문: " + orderId));
-
         if (order.getStatus() != OrderStatus.RESERVED) {
             throw new IllegalStateException("RESERVED 상태의 주문만 승인 가능: " + order.getStatus());
         }
-
         Sample sample = sampleRepository.findById(order.getSampleId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시료: " + order.getSampleId()));
+        return sample.getStock() >= order.getQuantity()
+                ? handleSufficientStock(order, sample)
+                : handleInsufficientStock(order, sample);
+    }
 
-        if (sample.getStock() >= order.getQuantity()) {
-            sampleRepository.updateStock(sample.getSampleId(), sample.getStock() - order.getQuantity());
-            orderRepository.updateStatus(orderId, OrderStatus.CONFIRMED);
-            order.setStatus(OrderStatus.CONFIRMED);
-        } else {
-            int shortageQty = order.getQuantity() - sample.getStock();
-            int productionQty = (int) Math.ceil(shortageQty / (sample.getYield() * 0.9));
-            long estimatedHours = (long) sample.getProductionTime() * productionQty;
-            String productionId = String.format("PRD-%04d", productionRepository.nextSequence());
-            productionRepository.save(new Production(
-                    productionId, orderId, sample.getSampleId(),
-                    productionQty, estimatedHours, false,
-                    System.currentTimeMillis(), shortageQty));
-            orderRepository.updateStatus(orderId, OrderStatus.PRODUCING);
-            order.setStatus(OrderStatus.PRODUCING);
-        }
+    private Order handleSufficientStock(Order order, Sample sample) {
+        sampleRepository.updateStock(sample.getSampleId(), sample.getStock() - order.getQuantity());
+        orderRepository.updateStatus(order.getOrderId(), OrderStatus.CONFIRMED);
+        order.setStatus(OrderStatus.CONFIRMED);
+        return order;
+    }
 
+    private Order handleInsufficientStock(Order order, Sample sample) {
+        int shortageQty = order.getQuantity() - sample.getStock();
+        int productionQty = (int) Math.ceil(shortageQty / (sample.getYield() * YIELD_SAFETY_MARGIN));
+        long estimatedHours = (long) sample.getProductionTime() * productionQty;
+        String productionId = String.format("PRD-%04d", productionRepository.nextSequence());
+        productionRepository.save(new Production(
+                productionId, order.getOrderId(), sample.getSampleId(),
+                productionQty, estimatedHours, false,
+                System.currentTimeMillis(), shortageQty));
+        orderRepository.updateStatus(order.getOrderId(), OrderStatus.PRODUCING);
+        order.setStatus(OrderStatus.PRODUCING);
         return order;
     }
 
