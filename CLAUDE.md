@@ -90,7 +90,9 @@ docs/
 
 ```
 Main (진입점, 메뉴 루프)
-  └── ConsoleView (모든 I/O, 입력 검증)
+  ├── Handler (OrderHandler, ProductionHandler, ReleaseHandler, SampleHandler)
+  │     └── ConsoleView / *View (모든 I/O, 입력 검증)
+  └── Controller
         ├── SampleController      → SampleRepository
         ├── OrderController       → OrderRepository + SampleRepository
         └── ProductionController  → ProductionRepository + OrderRepository + SampleRepository

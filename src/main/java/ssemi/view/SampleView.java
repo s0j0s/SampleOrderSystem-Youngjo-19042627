@@ -14,13 +14,13 @@ public class SampleView extends BaseView {
             showInfo("등록된 시료가 없습니다.");
             return;
         }
-        Map<String, Integer> resMap = reservedQtyMap(orders);
+        Map<String, Integer> reservedQtyById = reservedQtyMap(orders);
 
         System.out.printf("  %-7s  %-16s  %-10s  %4s  %5s  %4s%n",
                 "ID", "이름", "사양", "재고", "수율", "시간");
         System.out.println(SEP_THIN);
         for (Sample s : samples) {
-            int resQty = resMap.getOrDefault(s.getSampleId(), 0);
+            int resQty = reservedQtyById.getOrDefault(s.getSampleId(), 0);
             String tag = s.getStock() == 0 ? "🔴" : (s.getStock() < resQty ? "🟡" : "🟢");
             System.out.printf("  %-7s  %-16s  %-10s  %4d  %.2f  %3dh  %s%n",
                     s.getSampleId(), s.getName(), s.getSpec(),
@@ -37,7 +37,7 @@ public class SampleView extends BaseView {
             showInfo("등록된 시료가 없습니다.");
             return;
         }
-        Map<String, Integer> resMap = reservedQtyMap(orders);
+        Map<String, Integer> reservedQtyById = reservedQtyMap(orders);
 
         System.out.println("  [ 시료 목록 - 번호를 선택하세요 ]");
         System.out.printf("  %3s  %-7s  %-16s  %-10s  %4s%n",
@@ -45,7 +45,7 @@ public class SampleView extends BaseView {
         System.out.println(SEP_THIN);
         for (int i = 0; i < samples.size(); i++) {
             Sample s = samples.get(i);
-            int resQty = resMap.getOrDefault(s.getSampleId(), 0);
+            int resQty = reservedQtyById.getOrDefault(s.getSampleId(), 0);
             String tag = s.getStock() == 0 ? "🔴" : (s.getStock() < resQty ? "🟡" : "🟢");
             System.out.printf("  [%2d]  %-7s  %-16s  %-10s  %4d  %s%n",
                     i + 1, s.getSampleId(), s.getName(), s.getSpec(), s.getStock(), tag);

@@ -15,11 +15,11 @@ public class OrderView extends BaseView {
             showInfo("조회 가능한 주문이 없습니다.");
             return;
         }
-        Map<String, Sample> sm = sampleMap(samples);
+        Map<String, Sample> sampleById = sampleMap(samples);
         System.out.printf("  %-9s  %-26s  %5s%n", "주문 ID", "시료", "수량");
         System.out.println(SEP_THIN);
         for (Order o : orders) {
-            Sample s = sm.get(o.getSampleId());
+            Sample s = sampleById.get(o.getSampleId());
             String sName = s != null ? s.getName() + " (" + o.getSampleId() + ")" : o.getSampleId();
             System.out.printf("  %s %-9s  %-26s  %5d%n",
                     statusEmoji(o.getStatus()), o.getOrderId(), sName, o.getQuantity());
@@ -35,12 +35,12 @@ public class OrderView extends BaseView {
             showInfo("처리 대기 중인 주문이 없습니다.");
             return;
         }
-        Map<String, Sample> sm = sampleMap(samples);
+        Map<String, Sample> sampleById = sampleMap(samples);
         System.out.printf("  %3s  %-9s  %-26s  %5s%n", "번호", "주문 ID", "시료", "수량");
         System.out.println(SEP_THIN);
         for (int i = 0; i < orders.size(); i++) {
             Order o = orders.get(i);
-            Sample s = sm.get(o.getSampleId());
+            Sample s = sampleById.get(o.getSampleId());
             String sName = s != null ? s.getName() + " (" + o.getSampleId() + ")" : o.getSampleId();
             System.out.printf("  [%2d]  %s %-9s  %-26s  %5d%n",
                     i + 1, statusEmoji(o.getStatus()), o.getOrderId(), sName, o.getQuantity());

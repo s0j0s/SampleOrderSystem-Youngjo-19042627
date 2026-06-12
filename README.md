@@ -56,8 +56,10 @@ SampleOrderSystem-Youngjo-19042627/
 ├── PRD.md                  기능 요구사항 명세
 ├── README.md               실행 방법 (이 파일)
 ├── docs/
+│   ├── PLAN.md             전체 Phase 구현 계획
 │   ├── architecture.md     패키지 및 계층 구조
-│   └── test-scenarios.md   테스트 시나리오
+│   ├── test-scenarios.md   테스트 시나리오
+│   └── design/             Phase별 설계 문서 (phase-1.md ~ phase-6.md)
 ├── build.gradle
 ├── gradle.properties       UTF-8 인코딩 설정
 ├── src/
@@ -65,8 +67,9 @@ SampleOrderSystem-Youngjo-19042627/
 │   │   ├── Main.java
 │   │   ├── model/          Order, Sample, Production, OrderStatus
 │   │   ├── controller/     OrderController, SampleController, ProductionController
+│   │   ├── handler/        OrderHandler, ProductionHandler, ReleaseHandler, SampleHandler
 │   │   ├── repository/     OrderRepository, SampleRepository, ProductionRepository
-│   │   ├── view/           ConsoleView
+│   │   ├── view/           ConsoleView, BaseView, OrderView, SampleView, ProductionView, ReleaseView
 │   │   └── db/             DatabaseManager
 │   └── test/java/ssemi/
 │       ├── controller/
