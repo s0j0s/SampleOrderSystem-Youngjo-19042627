@@ -93,18 +93,18 @@ Phase 1 커밋 시 Repository 테스트에서 간접 검증 완료.
 > Action 진행 전 아래 항목을 확인하고 승인해주세요.
 
 ### 스키마 정합성
-- [ ] 모든 ID 컬럼 VARCHAR(15) — `S-NNN`, `ORD-NNNN`, `PRD-NNNN` 포맷에 충분한가?
-- [ ] `ORDERS.STATUS` 기본값 `'RESERVED'` — PRD 초기 상태와 일치하는가?
-- [ ] `ORDERS.CREATED_AT BIGINT` (epoch millis) — FIFO 정렬 목적으로 충분한가?
+- [x] 모든 ID 컬럼 VARCHAR(15) — `S-NNN`, `ORD-NNNN`, `PRD-NNNN` 포맷에 충분한가?
+- [x] `ORDERS.STATUS` 기본값 `'RESERVED'` — PRD 초기 상태와 일치하는가?
+- [x] `ORDERS.CREATED_AT BIGINT` (epoch millis) — FIFO 정렬 목적으로 충분한가?
 
 ### PRODUCTION 테이블 설계
-- [ ] `ORDER_ID`에 UNIQUE 제약 없음 — 재생산 시나리오 허용, 비즈니스 레벨로 제어하는 방식에 동의하는가?
-- [ ] `PRODUCTION_ID` PRIMARY KEY만 있으면 충분한가, 아니면 추가 인덱스가 필요한가?
-- [ ] FK 순서 SAMPLE → ORDERS → PRODUCTION (tearDown 역순) — 이해하고 동의하는가?
+- [x] `ORDER_ID`에 UNIQUE 제약 없음 — 재생산 시나리오 허용, 비즈니스 레벨로 제어하는 방식에 동의하는가?
+- [x] `PRODUCTION_ID` PRIMARY KEY만 있으면 충분한가, 아니면 추가 인덱스가 필요한가?
+- [x] FK 순서 SAMPLE → ORDERS → PRODUCTION (tearDown 역순) — 이해하고 동의하는가?
 
 ### 스키마 초기화 방식
-- [ ] `CREATE TABLE IF NOT EXISTS` 패턴 — 별도 마이그레이션 없이 앱 기동 시 자동 초기화하는 방식이 맞는가?
-- [ ] 파일 기반 H2(`./data/ssemi`)와 인메모리 H2(`mem:testdb`) 두 환경 모두 같은 DDL 사용 — 문제 없는가?
+- [x] `CREATE TABLE IF NOT EXISTS` 패턴 — 별도 마이그레이션 없이 앱 기동 시 자동 초기화하는 방식이 맞는가?
+- [x] 파일 기반 H2(`./data/ssemi`)와 인메모리 H2(`mem:testdb`) 두 환경 모두 같은 DDL 사용 — 문제 없는가?
 
 ---
 

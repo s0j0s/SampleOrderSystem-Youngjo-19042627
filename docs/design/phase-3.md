@@ -186,17 +186,17 @@ OrderRepository — 변경 없음 (FIFO 정렬 이미 적용됨)
 > Action 진행 전 아래 항목을 확인하고 승인해주세요.
 
 ### SampleRepository
-- [ ] `searchByName`을 `NAME LIKE '%keyword%'` 부분 일치로 구현하는 방향이 맞는가?
-- [ ] `findAll()`과 별도로 검색 메서드를 분리하는 것에 동의하는가?
+- [x] `searchByName`을 `NAME LIKE '%keyword%'` 부분 일치로 구현하는 방향이 맞는가?
+- [x] `findAll()`과 별도로 검색 메서드를 분리하는 것에 동의하는가?
 
 ### OrderRepository
-- [ ] 기존 `findByStatus()`가 `ORDER BY CREATED_AT ASC` 포함 → 별도 FIFO 메서드 추가 불필요 — 동의하는가?
+- [x] 기존 `findByStatus()`가 `ORDER BY CREATED_AT ASC` 포함 → 별도 FIFO 메서드 추가 불필요 — 동의하는가?
 
 ### ProductionRepository
-- [ ] `findPendingByFifo()`가 PRODUCTION+ORDERS JOIN으로 `ORDERS.CREATED_AT` 기준 정렬하는 방식이 맞는가?
-- [ ] `complete()`는 DB만 업데이트, 재고·주문상태 변경은 Controller 책임 — 역할 분리에 동의하는가?
-- [ ] `findByOrderId()`가 필요한가? (Phase 4 Controller에서 중복 생산 방지 체크에 사용)
+- [x] `findPendingByFifo()`가 PRODUCTION+ORDERS JOIN으로 `ORDERS.CREATED_AT` 기준 정렬하는 방식이 맞는가?
+- [x] `complete()`는 DB만 업데이트, 재고·주문상태 변경은 Controller 책임 — 역할 분리에 동의하는가?
+- [x] `findByOrderId()`가 필요한가? (Phase 4 Controller에서 중복 생산 방지 체크에 사용)
 
 ### 테스트
-- [ ] `ProductionRepositoryTest` DB URL을 `testdb_production`으로 분리 — 기존 테스트와 격리됨을 확인하는가?
-- [ ] FIFO 순서 검증 테스트: `createdAt`이 다른 주문 2개 저장 후 순서 확인 — 검증 방식이 충분한가?
+- [x] `ProductionRepositoryTest` DB URL을 `testdb_production`으로 분리 — 기존 테스트와 격리됨을 확인하는가?
+- [x] FIFO 순서 검증 테스트: `createdAt`이 다른 주문 2개 저장 후 순서 확인 — 검증 방식이 충분한가?
