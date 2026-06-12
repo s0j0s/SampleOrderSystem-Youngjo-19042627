@@ -35,48 +35,48 @@ class OrderControllerTest {
 
     @BeforeEach
     void setUp() {
-        sampleWithStock = new Sample("S001", "GaN 웨이퍼", "4인치", 50);
+        sampleWithStock = new Sample("S-001", "GaN 웨이퍼", "4인치", 50);
     }
 
     @Test
     void 주문_생성_성공() {
-        when(sampleRepository.findById("S001")).thenReturn(Optional.of(sampleWithStock));
+        when(sampleRepository.findById("S-001")).thenReturn(Optional.of(sampleWithStock));
         when(orderRepository.nextSequence()).thenReturn(1);
 
-        Order order = orderController.createOrder("S001", "CUST-001", 10);
+        Order order = orderController.createOrder("S-001", "CUST-001", 10);
 
-        assertEquals("O001", order.getOrderId());
+        assertEquals("ORD-0001", order.getOrderId());
         assertEquals(OrderStatus.PENDING, order.getStatus());
         verify(orderRepository).save(any(Order.class));
     }
 
     @Test
     void 존재하지_않는_시료로_주문_시_예외() {
-        when(sampleRepository.findById("S999")).thenReturn(Optional.empty());
+        when(sampleRepository.findById("S-999")).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class,
-                () -> orderController.createOrder("S999", "CUST-001", 10));
+                () -> orderController.createOrder("S-999", "CUST-001", 10));
     }
 
     @Test
     void 재고_충분_시_승인하면_CONFIRMED() {
-        Order pendingOrder = new Order("O001", "S001", "CUST-001", 10, OrderStatus.PENDING);
+        Order pendingOrder = new Order("O001", "S-001", "CUST-001", 10, OrderStatus.PENDING);
         when(orderRepository.findById("O001")).thenReturn(Optional.of(pendingOrder));
-        when(sampleRepository.findById("S001")).thenReturn(Optional.of(sampleWithStock));
+        when(sampleRepository.findById("S-001")).thenReturn(Optional.of(sampleWithStock));
 
         Order result = orderController.approveOrder("O001");
 
         assertEquals(OrderStatus.CONFIRMED, result.getStatus());
-        verify(sampleRepository).updateStock(eq("S001"), eq(40));
+        verify(sampleRepository).updateStock(eq("S-001"), eq(40));
         verify(orderRepository).updateStatus(eq("O001"), eq(OrderStatus.CONFIRMED));
     }
 
     @Test
     void 재고_부족_시_승인하면_PRODUCING() {
-        Sample lowStockSample = new Sample("S001", "GaN 웨이퍼", "4인치", 5);
-        Order pendingOrder = new Order("O001", "S001", "CUST-001", 10, OrderStatus.PENDING);
+        Sample lowStockSample = new Sample("S-001", "GaN 웨이퍼", "4인치", 5);
+        Order pendingOrder = new Order("O001", "S-001", "CUST-001", 10, OrderStatus.PENDING);
         when(orderRepository.findById("O001")).thenReturn(Optional.of(pendingOrder));
-        when(sampleRepository.findById("S001")).thenReturn(Optional.of(lowStockSample));
+        when(sampleRepository.findById("S-001")).thenReturn(Optional.of(lowStockSample));
 
         Order result = orderController.approveOrder("O001");
 
@@ -87,7 +87,7 @@ class OrderControllerTest {
 
     @Test
     void PENDING_아닌_주문_승인_시_예외() {
-        Order confirmedOrder = new Order("O001", "S001", "CUST-001", 10, OrderStatus.CONFIRMED);
+        Order confirmedOrder = new Order("O001", "S-001", "CUST-001", 10, OrderStatus.CONFIRMED);
         when(orderRepository.findById("O001")).thenReturn(Optional.of(confirmedOrder));
 
         assertThrows(IllegalStateException.class,
@@ -96,7 +96,7 @@ class OrderControllerTest {
 
     @Test
     void 주문_거부_성공() {
-        Order pendingOrder = new Order("O001", "S001", "CUST-001", 10, OrderStatus.PENDING);
+        Order pendingOrder = new Order("O001", "S-001", "CUST-001", 10, OrderStatus.PENDING);
         when(orderRepository.findById("O001")).thenReturn(Optional.of(pendingOrder));
 
         Order result = orderController.rejectOrder("O001");
@@ -107,7 +107,7 @@ class OrderControllerTest {
 
     @Test
     void CONFIRMED_주문_출고_성공() {
-        Order confirmedOrder = new Order("O001", "S001", "CUST-001", 10, OrderStatus.CONFIRMED);
+        Order confirmedOrder = new Order("O001", "S-001", "CUST-001", 10, OrderStatus.CONFIRMED);
         when(orderRepository.findById("O001")).thenReturn(Optional.of(confirmedOrder));
 
         Order result = orderController.releaseOrder("O001");
@@ -118,7 +118,7 @@ class OrderControllerTest {
 
     @Test
     void PRODUCING_주문_출고_성공() {
-        Order producingOrder = new Order("O001", "S001", "CUST-001", 10, OrderStatus.PRODUCING);
+        Order producingOrder = new Order("O001", "S-001", "CUST-001", 10, OrderStatus.PRODUCING);
         when(orderRepository.findById("O001")).thenReturn(Optional.of(producingOrder));
 
         Order result = orderController.releaseOrder("O001");

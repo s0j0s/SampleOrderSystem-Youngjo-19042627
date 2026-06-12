@@ -23,7 +23,7 @@ public class OrderController {
         sampleRepository.findById(sampleId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시료: " + sampleId));
 
-        String orderId = String.format("O%03d", orderRepository.nextSequence());
+        String orderId = String.format("ORD-%04d", orderRepository.nextSequence());
         Order order = new Order(orderId, sampleId, customerId, quantity, OrderStatus.PENDING);
         orderRepository.save(order);
         return order;

@@ -28,7 +28,7 @@
 
 | 필드 | 타입 | 설명 |
 |------|------|------|
-| sampleId | String | 식별자 (S001 형식) |
+| sampleId | String | 식별자 (S-001 형식) |
 | name | String | 시료명 |
 | spec | String | 사양 |
 | stock | int | 현재 재고 수량 |
@@ -41,7 +41,7 @@
 
 | 필드 | 타입 | 설명 |
 |------|------|------|
-| orderId | String | 식별자 (O001 형식) |
+| orderId | String | 식별자 (ORD-0001 형식) |
 | sampleId | String | 주문 시료 ID (FK) |
 | customerId | String | 고객 ID |
 | quantity | int | 주문 수량 |
@@ -52,7 +52,7 @@
 
 | 필드 | 타입 | 설명 |
 |------|------|------|
-| productionId | String | 식별자 (P001 형식) |
+| productionId | String | 식별자 (PRD-0001 형식) |
 | orderId | String | 연관 주문 ID (FK) |
 | sampleId | String | 생산 시료 ID |
 | productionQty | int | 생산 수량 = ceil(주문수량 / (수율 × 0.9)) |
@@ -80,7 +80,7 @@ CONFIRMED → (출고) → RELEASE
 
 ```sql
 CREATE TABLE SAMPLE (
-    SAMPLE_ID       VARCHAR(10)  PRIMARY KEY,
+    SAMPLE_ID       VARCHAR(15)  PRIMARY KEY,
     NAME            VARCHAR(100) NOT NULL,
     SPEC            VARCHAR(200),
     STOCK           INT          NOT NULL DEFAULT 0,
@@ -89,8 +89,8 @@ CREATE TABLE SAMPLE (
 );
 
 CREATE TABLE ORDERS (
-    ORDER_ID    VARCHAR(10)  PRIMARY KEY,
-    SAMPLE_ID   VARCHAR(10)  NOT NULL,
+    ORDER_ID    VARCHAR(15)  PRIMARY KEY,
+    SAMPLE_ID   VARCHAR(15)  NOT NULL,
     CUSTOMER_ID VARCHAR(50)  NOT NULL,
     QUANTITY    INT          NOT NULL,
     STATUS      VARCHAR(20)  NOT NULL DEFAULT 'RESERVED',
@@ -99,9 +99,9 @@ CREATE TABLE ORDERS (
 );
 
 CREATE TABLE PRODUCTION (
-    PRODUCTION_ID   VARCHAR(10)  PRIMARY KEY,
-    ORDER_ID        VARCHAR(10)  NOT NULL UNIQUE,
-    SAMPLE_ID       VARCHAR(10)  NOT NULL,
+    PRODUCTION_ID   VARCHAR(15)  PRIMARY KEY,
+    ORDER_ID        VARCHAR(15)  NOT NULL UNIQUE,
+    SAMPLE_ID       VARCHAR(15)  NOT NULL,
     PRODUCTION_QTY  INT          NOT NULL,
     ESTIMATED_HOURS BIGINT       NOT NULL,
     COMPLETED       BOOLEAN      NOT NULL DEFAULT FALSE,

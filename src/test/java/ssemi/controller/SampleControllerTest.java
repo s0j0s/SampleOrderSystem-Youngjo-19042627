@@ -30,7 +30,7 @@ class SampleControllerTest {
 
         Sample sample = sampleController.registerSample("GaN 웨이퍼", "4인치 GaN", 50);
 
-        assertEquals("S001", sample.getSampleId());
+        assertEquals("S-001", sample.getSampleId());
         assertEquals("GaN 웨이퍼", sample.getName());
         assertEquals(50, sample.getStock());
         verify(sampleRepository).save(any(Sample.class));
@@ -42,14 +42,14 @@ class SampleControllerTest {
 
         Sample sample = sampleController.registerSample("SiC 웨이퍼", "6인치", 30);
 
-        assertEquals("S005", sample.getSampleId());
+        assertEquals("S-005", sample.getSampleId());
     }
 
     @Test
     void 전체_시료_목록_반환() {
         List<Sample> expected = List.of(
-                new Sample("S001", "GaN", "4인치", 50),
-                new Sample("S002", "SiC", "6인치", 30)
+                new Sample("S-001", "GaN", "4인치", 50),
+                new Sample("S-002", "SiC", "6인치", 30)
         );
         when(sampleRepository.findAll()).thenReturn(expected);
 
@@ -61,12 +61,12 @@ class SampleControllerTest {
 
     @Test
     void ID로_시료_조회() {
-        Sample sample = new Sample("S001", "GaN", "4인치", 50);
-        when(sampleRepository.findById("S001")).thenReturn(Optional.of(sample));
+        Sample sample = new Sample("S-001", "GaN", "4인치", 50);
+        when(sampleRepository.findById("S-001")).thenReturn(Optional.of(sample));
 
-        Optional<Sample> result = sampleController.getSampleById("S001");
+        Optional<Sample> result = sampleController.getSampleById("S-001");
 
         assertTrue(result.isPresent());
-        assertEquals("S001", result.get().getSampleId());
+        assertEquals("S-001", result.get().getSampleId());
     }
 }
