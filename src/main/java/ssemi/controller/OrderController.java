@@ -3,8 +3,10 @@ package ssemi.controller;
 import lombok.RequiredArgsConstructor;
 import ssemi.model.Order;
 import ssemi.model.OrderStatus;
+import ssemi.model.Production;
 import ssemi.model.Sample;
 import ssemi.repository.OrderRepository;
+import ssemi.repository.ProductionRepository;
 import ssemi.repository.SampleRepository;
 
 import java.util.List;
@@ -15,6 +17,7 @@ public class OrderController {
 
     private final OrderRepository orderRepository;
     private final SampleRepository sampleRepository;
+    private final ProductionRepository productionRepository;
 
     public Order createOrder(String sampleId, String customerId, int quantity) {
         sampleRepository.findById(sampleId)
@@ -59,6 +62,13 @@ public class OrderController {
             orderRepository.updateStatus(orderId, OrderStatus.CONFIRMED);
             order.setStatus(OrderStatus.CONFIRMED);
         } else {
+            int productionQty = (int) Math.ceil(
+                    order.getQuantity() / (sample.getYield() * 0.9));
+            long estimatedHours = (long) sample.getProductionTime() * productionQty;
+            String productionId = String.format("PRD-%04d", productionRepository.nextSequence());
+            productionRepository.save(new Production(
+                    productionId, orderId, sample.getSampleId(),
+                    productionQty, estimatedHours, false));
             orderRepository.updateStatus(orderId, OrderStatus.PRODUCING);
             order.setStatus(OrderStatus.PRODUCING);
         }

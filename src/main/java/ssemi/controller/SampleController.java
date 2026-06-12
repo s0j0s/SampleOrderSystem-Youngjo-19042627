@@ -26,4 +26,8 @@ public class SampleController {
     public Optional<Sample> getSampleById(String sampleId) {
         return sampleRepository.findById(sampleId);
     }
+
+    public List<Sample> searchByName(String keyword) {
+        return sampleRepository.searchByName(keyword);
+    }
 }

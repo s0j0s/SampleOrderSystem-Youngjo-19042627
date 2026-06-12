@@ -8,8 +8,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ssemi.model.Order;
 import ssemi.model.OrderStatus;
+import ssemi.model.Production;
 import ssemi.model.Sample;
 import ssemi.repository.OrderRepository;
+import ssemi.repository.ProductionRepository;
 import ssemi.repository.SampleRepository;
 
 import java.util.Optional;
@@ -24,6 +26,7 @@ class OrderControllerTest {
 
     @Mock private OrderRepository orderRepository;
     @Mock private SampleRepository sampleRepository;
+    @Mock private ProductionRepository productionRepository;
     @InjectMocks private OrderController orderController;
 
     private Sample sampleWithStock;
@@ -80,6 +83,8 @@ class OrderControllerTest {
         assertEquals(OrderStatus.PRODUCING, result.getStatus());
         verify(sampleRepository, never()).updateStock(any(), anyInt());
         verify(orderRepository).updateStatus(eq("ORD-0001"), eq(OrderStatus.PRODUCING));
+        verify(productionRepository).nextSequence();
+        verify(productionRepository).save(any(Production.class));
     }
 
     @Test

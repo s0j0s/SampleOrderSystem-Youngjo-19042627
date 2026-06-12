@@ -68,4 +68,15 @@ class SampleControllerTest {
         assertTrue(result.isPresent());
         assertEquals("S-001", result.get().getSampleId());
     }
+
+    @Test
+    void 키워드로_시료_검색() {
+        List<Sample> expected = List.of(new Sample("S-001", "GaN 웨이퍼", "4인치", 50, 0.9, 2));
+        when(sampleRepository.searchByName("GaN")).thenReturn(expected);
+
+        List<Sample> result = sampleController.searchByName("GaN");
+
+        assertEquals(1, result.size());
+        verify(sampleRepository).searchByName("GaN");
+    }
 }

@@ -1,9 +1,11 @@
 package ssemi;
 
 import ssemi.controller.OrderController;
+import ssemi.controller.ProductionController;
 import ssemi.controller.SampleController;
 import ssemi.db.DatabaseManager;
 import ssemi.repository.OrderRepository;
+import ssemi.repository.ProductionRepository;
 import ssemi.repository.SampleRepository;
 import ssemi.view.ConsoleView;
 
@@ -13,8 +15,10 @@ public class Main {
         DatabaseManager dbManager = new DatabaseManager();
         SampleRepository sampleRepository = new SampleRepository(dbManager);
         OrderRepository orderRepository = new OrderRepository(dbManager);
+        ProductionRepository productionRepository = new ProductionRepository(dbManager);
         SampleController sampleController = new SampleController(sampleRepository);
-        OrderController orderController = new OrderController(orderRepository, sampleRepository);
+        OrderController orderController = new OrderController(orderRepository, sampleRepository, productionRepository);
+        ProductionController productionController = new ProductionController(productionRepository, orderRepository, sampleRepository);
         ConsoleView view = new ConsoleView();
 
         boolean running = true;
