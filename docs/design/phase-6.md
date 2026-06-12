@@ -303,11 +303,11 @@ then:  verify complete("PRD-0002") 호출
 
 ## 완료 기준
 
-- [ ] `./gradlew test` 전체 통과 (목표: 52개 이상)
-- [ ] 모든 Controller public 메서드 1회 이상 호출
-- [ ] 모든 비즈니스 분기 (if/else 조건) 양쪽 모두 커버
-- [ ] 모든 `IllegalArgumentException` / `IllegalStateException` 경로 커버
-- [ ] `checkAndCompleteExpired()` — 만료/미만료/예외계속 3케이스 커버
+- [x] `./gradlew test` 전체 통과 (52개 PASS)
+- [x] 모든 Controller public 메서드 1회 이상 호출
+- [x] 모든 비즈니스 분기 (if/else 조건) 양쪽 모두 커버
+- [x] 모든 `IllegalArgumentException` / `IllegalStateException` 경로 커버
+- [x] `checkAndCompleteExpired()` — 만료/미만료/예외계속 3케이스 커버
 - [ ] 수동 검증 시나리오 A~D 오류 없이 완료
 
 ---
