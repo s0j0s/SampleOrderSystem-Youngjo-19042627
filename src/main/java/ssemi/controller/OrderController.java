@@ -1,5 +1,6 @@
 package ssemi.controller;
 
+import lombok.RequiredArgsConstructor;
 import ssemi.model.Order;
 import ssemi.model.OrderStatus;
 import ssemi.model.Sample;
@@ -9,15 +10,11 @@ import ssemi.repository.SampleRepository;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 public class OrderController {
 
     private final OrderRepository orderRepository;
     private final SampleRepository sampleRepository;
-
-    public OrderController(OrderRepository orderRepository, SampleRepository sampleRepository) {
-        this.orderRepository = orderRepository;
-        this.sampleRepository = sampleRepository;
-    }
 
     public Order createOrder(String sampleId, String customerId, int quantity) {
         sampleRepository.findById(sampleId)

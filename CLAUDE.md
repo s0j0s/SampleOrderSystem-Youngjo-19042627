@@ -145,7 +145,7 @@ RESERVED → (승인, 재고 충분) → CONFIRMED → (출고) → RELEASE
 
 ### Lombok 사용 규칙
 
-모델 클래스에만 적용. Controller/Repository/View에는 사용하지 않는다.
+모델, Controller, Repository에 적용. View에는 사용하지 않는다.
 
 | 어노테이션 | 적용 대상 |
 |-----------|-----------|
@@ -153,6 +153,7 @@ RESERVED → (승인, 재고 충분) → CONFIRMED → (출고) → RELEASE
 | `@Setter` | 가변 필드 개별 적용 (`@Setter` on field) |
 | `@AllArgsConstructor` | 모든 모델 클래스 |
 | `@ToString` | 모든 모델 클래스 |
+| `@RequiredArgsConstructor` | Controller, Repository (final 필드 생성자 대체) |
 
 ### SQL 규칙
 

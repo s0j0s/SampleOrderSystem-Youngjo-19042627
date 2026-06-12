@@ -1,5 +1,6 @@
 package ssemi.repository;
 
+import lombok.RequiredArgsConstructor;
 import ssemi.db.DatabaseManager;
 import ssemi.model.Order;
 import ssemi.model.OrderStatus;
@@ -9,13 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 public class OrderRepository {
 
     private final DatabaseManager dbManager;
-
-    public OrderRepository(DatabaseManager dbManager) {
-        this.dbManager = dbManager;
-    }
 
     public void save(Order order) {
         String sql = "INSERT INTO ORDERS (ORDER_ID, SAMPLE_ID, CUSTOMER_ID, QUANTITY, STATUS, CREATED_AT) VALUES (?, ?, ?, ?, ?, ?)";

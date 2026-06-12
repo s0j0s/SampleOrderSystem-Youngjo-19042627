@@ -1,5 +1,6 @@
 package ssemi.repository;
 
+import lombok.RequiredArgsConstructor;
 import ssemi.db.DatabaseManager;
 import ssemi.model.Production;
 
@@ -8,13 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 public class ProductionRepository {
 
     private final DatabaseManager dbManager;
-
-    public ProductionRepository(DatabaseManager dbManager) {
-        this.dbManager = dbManager;
-    }
 
     public void save(Production production) {
         String sql = "INSERT INTO PRODUCTION (PRODUCTION_ID, ORDER_ID, SAMPLE_ID, PRODUCTION_QTY, ESTIMATED_HOURS, COMPLETED) VALUES (?, ?, ?, ?, ?, ?)";

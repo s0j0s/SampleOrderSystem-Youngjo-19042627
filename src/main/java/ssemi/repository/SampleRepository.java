@@ -1,5 +1,6 @@
 package ssemi.repository;
 
+import lombok.RequiredArgsConstructor;
 import ssemi.db.DatabaseManager;
 import ssemi.model.Sample;
 
@@ -8,13 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 public class SampleRepository {
 
     private final DatabaseManager dbManager;
-
-    public SampleRepository(DatabaseManager dbManager) {
-        this.dbManager = dbManager;
-    }
 
     public void save(Sample sample) {
         String sql = "INSERT INTO SAMPLE (SAMPLE_ID, NAME, SPEC, STOCK, YIELD, PRODUCTION_TIME) VALUES (?, ?, ?, ?, ?, ?)";

@@ -1,18 +1,16 @@
 package ssemi.controller;
 
+import lombok.RequiredArgsConstructor;
 import ssemi.model.Sample;
 import ssemi.repository.SampleRepository;
 
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 public class SampleController {
 
     private final SampleRepository sampleRepository;
-
-    public SampleController(SampleRepository sampleRepository) {
-        this.sampleRepository = sampleRepository;
-    }
 
     public Sample registerSample(String name, String spec, int stock, double yield, int productionTime) {
         String sampleId = String.format("S-%03d", sampleRepository.nextSequence());

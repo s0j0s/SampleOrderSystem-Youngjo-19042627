@@ -55,18 +55,18 @@ status               status          (유지)
 ## 설계 결정
 
 ### D-1. Lombok 도입
-**결정:** 모든 모델 클래스에 Lombok 적용  
+**결정:** 모델, Controller, Repository에 Lombok 적용 (View 제외)  
 **사용 어노테이션:**
 
-| 어노테이션 | 용도 |
-|-----------|------|
-| `@Getter` | 모든 필드 getter 자동 생성 |
-| `@Setter` | 가변 필드에만 개별 적용 |
-| `@AllArgsConstructor` | 전체 파라미터 생성자 |
-| `@ToString` | toString() 자동 생성 |
-| `@RequiredArgsConstructor` | final 필드 생성자 (불필요 시 미사용) |
+| 어노테이션 | 적용 대상 | 용도 |
+|-----------|----------|------|
+| `@Getter` | 모델 | 모든 필드 getter 자동 생성 |
+| `@Setter` | 모델 가변 필드 | 개별 필드에만 적용 |
+| `@AllArgsConstructor` | 모델 | 전체 파라미터 생성자 |
+| `@ToString` | 모델 | toString() 자동 생성 |
+| `@RequiredArgsConstructor` | Controller, Repository | final 필드 생성자 대체 |
 
-**이유:** 보일러플레이트(getter/setter/toString/생성자) 제거 → 필드와 비즈니스 로직에 집중.
+**이유:** 보일러플레이트 제거 → 비즈니스 로직 집중. Controller/Repository 단일 생성자는 `@RequiredArgsConstructor`로 충분.
 
 ### D-2. OrderStatus 변경 방식
 **결정:** 직접 rename (PENDING→RESERVED, RELEASED→RELEASE, APPROVED 삭제)  
