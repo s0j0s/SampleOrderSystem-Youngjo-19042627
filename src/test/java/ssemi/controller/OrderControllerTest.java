@@ -14,10 +14,15 @@ import ssemi.repository.OrderRepository;
 import ssemi.repository.ProductionRepository;
 import ssemi.repository.SampleRepository;
 
+import java.util.List;
 import java.util.Optional;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -119,5 +124,111 @@ class OrderControllerTest {
 
         assertEquals(OrderStatus.RELEASE, result.getStatus());
         verify(orderRepository).updateStatus(eq("ORD-0001"), eq(OrderStatus.RELEASE));
+    }
+
+    @Test
+    void 전체_주문_목록_반환() {
+        Order order1 = new Order("ORD-0001", "S-001", "CUST-001", 10, OrderStatus.RESERVED, 0L);
+        Order order2 = new Order("ORD-0002", "S-001", "CUST-002",  5, OrderStatus.CONFIRMED, 0L);
+        when(orderRepository.findAll()).thenReturn(List.of(order1, order2));
+
+        List<Order> result = orderController.getAllOrders();
+
+        verify(orderRepository).findAll();
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void ID로_주문_조회() {
+        Order order = new Order("ORD-0001", "S-001", "CUST-001", 10, OrderStatus.RESERVED, 0L);
+        when(orderRepository.findById("ORD-0001")).thenReturn(Optional.of(order));
+
+        Optional<Order> result = orderController.getOrderById("ORD-0001");
+
+        assertEquals("ORD-0001", result.get().getOrderId());
+    }
+
+    @Test
+    void 상태별_주문_조회() {
+        Order order = new Order("ORD-0001", "S-001", "CUST-001", 10, OrderStatus.RESERVED, 0L);
+        when(orderRepository.findByStatus(OrderStatus.RESERVED)).thenReturn(List.of(order));
+
+        List<Order> result = orderController.getOrdersByStatus(OrderStatus.RESERVED);
+
+        verify(orderRepository).findByStatus(OrderStatus.RESERVED);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void 재고와_주문수량_정확히_같을때_CONFIRMED() {
+        Sample exactSample = new Sample("S-001", "GaN 웨이퍼", "4인치", 10, 0.9, 2);
+        Order reservedOrder = new Order("ORD-0001", "S-001", "CUST-001", 10,
+                OrderStatus.RESERVED, 0L);
+        when(orderRepository.findById("ORD-0001")).thenReturn(Optional.of(reservedOrder));
+        when(sampleRepository.findById("S-001")).thenReturn(Optional.of(exactSample));
+
+        Order result = orderController.approveOrder("ORD-0001");
+
+        assertEquals(OrderStatus.CONFIRMED, result.getStatus());
+        verify(sampleRepository).updateStock(eq("S-001"), eq(0));
+        verify(productionRepository, never()).save(any());
+    }
+
+    @Test
+    void 재고_부족_수율_1점0_생산량_계산() {
+        Sample highYieldSample = new Sample("S-001", "GaN 웨이퍼", "4인치", 0, 1.0, 1);
+        Order reservedOrder = new Order("ORD-0001", "S-001", "CUST-001", 100,
+                OrderStatus.RESERVED, 0L);
+        when(orderRepository.findById("ORD-0001")).thenReturn(Optional.of(reservedOrder));
+        when(sampleRepository.findById("S-001")).thenReturn(Optional.of(highYieldSample));
+        when(productionRepository.nextSequence()).thenReturn(1);
+
+        orderController.approveOrder("ORD-0001");
+
+        // ceil(100 / (1.0 * 0.9)) = ceil(111.11) = 112
+        verify(productionRepository).save(argThat(p -> p.getProductionQty() == 112));
+    }
+
+    @Test
+    void 재고_부족_수율_0점5_생산량_계산() {
+        Sample lowYieldSample = new Sample("S-001", "GaN 웨이퍼", "4인치", 0, 0.5, 1);
+        Order reservedOrder = new Order("ORD-0001", "S-001", "CUST-001", 10,
+                OrderStatus.RESERVED, 0L);
+        when(orderRepository.findById("ORD-0001")).thenReturn(Optional.of(reservedOrder));
+        when(sampleRepository.findById("S-001")).thenReturn(Optional.of(lowYieldSample));
+        when(productionRepository.nextSequence()).thenReturn(1);
+
+        orderController.approveOrder("ORD-0001");
+
+        // ceil(10 / (0.5 * 0.9)) = ceil(22.22) = 23
+        verify(productionRepository).save(argThat(p -> p.getProductionQty() == 23));
+    }
+
+    @Test
+    void 존재하지_않는_주문_승인_시_예외() {
+        when(orderRepository.findById("ORD-9999")).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class,
+                () -> orderController.approveOrder("ORD-9999"));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = OrderStatus.class, names = {"REJECTED", "PRODUCING"})
+    void 비확정_주문_출고_시_예외(OrderStatus status) {
+        Order order = new Order("ORD-0001", "S-001", "CUST-001", 10, status, 0L);
+        when(orderRepository.findById("ORD-0001")).thenReturn(Optional.of(order));
+
+        assertThrows(IllegalStateException.class,
+                () -> orderController.releaseOrder("ORD-0001"));
+    }
+
+    @Test
+    void CONFIRMED_주문_거부_시_예외() {
+        Order confirmedOrder = new Order("ORD-0001", "S-001", "CUST-001", 10,
+                OrderStatus.CONFIRMED, 0L);
+        when(orderRepository.findById("ORD-0001")).thenReturn(Optional.of(confirmedOrder));
+
+        assertThrows(IllegalStateException.class,
+                () -> orderController.rejectOrder("ORD-0001"));
     }
 }

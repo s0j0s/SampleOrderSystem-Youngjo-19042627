@@ -116,4 +116,52 @@ class ProductionControllerTest {
         assertEquals(1, result.size());
         verify(productionRepository).findPendingByFifo();
     }
+
+    @Test
+    void checkAndCompleteExpired_만료된_생산_자동완료() {
+        // startedAt=1L, estimatedHours=1L → 1 + 3_600_000 << now → 만료 조건 충족
+        Production expired = new Production("PRD-0001", "ORD-0001", "S-001",
+                13, 1L, false, 1L, 5);
+        when(productionRepository.findPendingByFifo()).thenReturn(List.of(expired));
+        when(productionRepository.findById("PRD-0001")).thenReturn(Optional.of(expired));
+        when(orderRepository.findById("ORD-0001")).thenReturn(Optional.of(producingOrder));
+        when(sampleRepository.findById("S-001")).thenReturn(Optional.of(sample));
+
+        productionController.checkAndCompleteExpired();
+
+        verify(productionRepository).complete("PRD-0001");
+        verify(orderRepository).updateStatus("ORD-0001", OrderStatus.CONFIRMED);
+    }
+
+    @Test
+    void checkAndCompleteExpired_미만료_생산_완료_미호출() {
+        // startedAt=now, estimatedHours=100 → 만료 조건 미충족
+        long now = System.currentTimeMillis();
+        Production fresh = new Production("PRD-0001", "ORD-0001", "S-001",
+                13, 100L, false, now, 5);
+        when(productionRepository.findPendingByFifo()).thenReturn(List.of(fresh));
+
+        productionController.checkAndCompleteExpired();
+
+        verify(productionRepository, never()).complete(any());
+    }
+
+    @Test
+    void checkAndCompleteExpired_예외발생시_다음항목_계속_처리() {
+        Production prod1 = new Production("PRD-0001", "ORD-0001", "S-001", 13, 1L, false, 1L, 5);
+        Production prod2 = new Production("PRD-0002", "ORD-0002", "S-001",  7, 1L, false, 1L, 3);
+        when(productionRepository.findPendingByFifo()).thenReturn(List.of(prod1, prod2));
+        // prod1: findById empty → IllegalArgumentException → 무시
+        when(productionRepository.findById("PRD-0001")).thenReturn(Optional.empty());
+        // prod2: 정상 처리
+        Order producingOrder2 = new Order("ORD-0002", "S-001", "CUST-002", 5, OrderStatus.PRODUCING, 0L);
+        when(productionRepository.findById("PRD-0002")).thenReturn(Optional.of(prod2));
+        when(orderRepository.findById("ORD-0002")).thenReturn(Optional.of(producingOrder2));
+        when(sampleRepository.findById("S-001")).thenReturn(Optional.of(sample));
+
+        productionController.checkAndCompleteExpired();
+
+        verify(productionRepository, never()).complete("PRD-0001");
+        verify(productionRepository).complete("PRD-0002");
+    }
 }
