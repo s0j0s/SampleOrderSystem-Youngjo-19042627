@@ -81,4 +81,25 @@ class OrderRepositoryTest {
         assertTrue(found.isPresent());
         assertEquals(OrderStatus.CONFIRMED, found.get().getStatus());
     }
+
+    @Test
+    void 상태별_조회_결과없음() {
+        orderRepository.save(new Order("ORD-0001", "S-001", "CUST-001", 10, OrderStatus.RESERVED, 1000L));
+
+        List<Order> result = orderRepository.findByStatus(OrderStatus.CONFIRMED);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void FIFO_정렬_확인() {
+        orderRepository.save(new Order("ORD-0001", "S-001", "CUST-001", 10, OrderStatus.RESERVED, 2000L));
+        orderRepository.save(new Order("ORD-0002", "S-001", "CUST-002",  5, OrderStatus.RESERVED, 1000L));
+
+        List<Order> result = orderRepository.findByStatus(OrderStatus.RESERVED);
+
+        assertEquals(2, result.size());
+        assertEquals("ORD-0002", result.get(0).getOrderId());
+        assertEquals("ORD-0001", result.get(1).getOrderId());
+    }
 }

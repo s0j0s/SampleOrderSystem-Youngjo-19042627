@@ -93,4 +93,28 @@ class SampleRepositoryTest {
         assertEquals(2, result.size());
         assertTrue(result.stream().allMatch(s -> s.getName().contains("GaN")));
     }
+
+    @Test
+    void 시료_전체필드_수정() {
+        repository.save(new Sample("S-001", "GaN 웨이퍼", "4인치", 50, 0.9, 2));
+        repository.update(new Sample("S-001", "InP 웨이퍼", "3인치", 100, 0.8, 3));
+
+        Optional<Sample> found = repository.findById("S-001");
+        assertTrue(found.isPresent());
+        assertEquals("InP 웨이퍼", found.get().getName());
+        assertEquals("3인치", found.get().getSpec());
+        assertEquals(100, found.get().getStock());
+        assertEquals(0.8, found.get().getYield(), 1e-9);
+        assertEquals(3, found.get().getProductionTime());
+    }
+
+    @Test
+    void 이름_검색_결과없음() {
+        repository.save(new Sample("S-001", "GaN 웨이퍼", "4인치", 30, 0.9, 2));
+        repository.save(new Sample("S-002", "SiC 웨이퍼", "6인치", 20, 0.8, 3));
+
+        List<Sample> result = repository.searchByName("InP");
+
+        assertTrue(result.isEmpty());
+    }
 }

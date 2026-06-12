@@ -106,4 +106,11 @@ class ProductionRepositoryTest {
         productionRepository.save(new Production("PRD-0001", "ORD-0001", "S-001", 13, 26L, false, System.currentTimeMillis(), 5));
         assertEquals(2, productionRepository.nextSequence());
     }
+
+    @Test
+    void 미완료_목록_없으면_빈_리스트() {
+        List<Production> result = productionRepository.findPendingByFifo();
+
+        assertTrue(result.isEmpty());
+    }
 }
