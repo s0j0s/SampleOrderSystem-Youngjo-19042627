@@ -100,17 +100,9 @@ public List<Sample> searchByName(String keyword) {
 
 ### 4-2. `OrderController.java` — 생성자 + `approveOrder` 수정
 
-**생성자 변경:**
+**필드 추가** (`@RequiredArgsConstructor`가 생성자 생성):
 ```java
 private final ProductionRepository productionRepository;
-
-public OrderController(OrderRepository orderRepository,
-                       SampleRepository sampleRepository,
-                       ProductionRepository productionRepository) {
-    this.orderRepository = orderRepository;
-    this.sampleRepository = sampleRepository;
-    this.productionRepository = productionRepository;
-}
 ```
 
 **`approveOrder()` 재고 부족 분기 교체 (기존 L64-66 대체):**
@@ -135,6 +127,7 @@ public OrderController(OrderRepository orderRepository,
 ```java
 package ssemi.controller;
 
+import lombok.RequiredArgsConstructor;
 import ssemi.model.Order;
 import ssemi.model.OrderStatus;
 import ssemi.model.Production;
@@ -145,19 +138,12 @@ import ssemi.repository.SampleRepository;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 public class ProductionController {
 
     private final ProductionRepository productionRepository;
     private final OrderRepository orderRepository;
     private final SampleRepository sampleRepository;
-
-    public ProductionController(ProductionRepository productionRepository,
-                                OrderRepository orderRepository,
-                                SampleRepository sampleRepository) {
-        this.productionRepository = productionRepository;
-        this.orderRepository = orderRepository;
-        this.sampleRepository = sampleRepository;
-    }
 
     public List<Production> getPendingQueue() {
         return productionRepository.findPendingByFifo();
