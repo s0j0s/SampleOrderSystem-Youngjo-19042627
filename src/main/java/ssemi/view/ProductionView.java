@@ -1,0 +1,94 @@
+package ssemi.view;
+
+import ssemi.model.Order;
+import ssemi.model.Production;
+import ssemi.model.Sample;
+
+import java.util.List;
+import java.util.Map;
+
+public class ProductionView extends BaseView {
+
+    public void renderProductionStatus(List<Production> productions, List<Order> orders, List<Sample> samples) {
+        printHeader("메인 > 생산라인 조회 > 생산 현황  [자동 갱신 2.5초]");
+        long now = System.currentTimeMillis();
+        if (productions.isEmpty()) {
+            showInfo("현재 진행 중인 생산이 없습니다.");
+            return;
+        }
+        Map<String, Order>  om = orderMap(orders);
+        Map<String, Sample> sm = sampleMap(samples);
+        System.out.printf("  ⏳ 생산 중 %d건%n%n", productions.size());
+
+        for (Production p : productions) {
+            Order  o = om.get(p.getOrderId());
+            Sample s = sm.get(p.getSampleId());
+            if (o == null || s == null) continue;
+
+            double elapsedH = (now - p.getStartedAt()) / 3_600_000.0;
+            double totalH   = p.getEstimatedHours();
+            double ratio    = totalH > 0 ? Math.min(1.0, elapsedH / totalH) : 1.0;
+            double remainH  = Math.max(0.0, totalH - elapsedH);
+            int    curQty   = (int)(ratio * p.getProductionQty());
+            long   endAt    = p.getStartedAt() + p.getEstimatedHours() * 3_600_000L;
+
+            System.out.println("  ┌─────────────────────────────────────────────────────┐");
+            System.out.printf ("  │  ⏳ %-8s  →  %-8s%27s│%n", p.getProductionId(), o.getOrderId(), "");
+            System.out.printf ("  │%s│%n", padVisual(String.format("  시료  %s  %s  (수율 %.2f / 단위 %dh/개)",
+                    s.getSampleId(), s.getName(), s.getYield(), s.getProductionTime()), 53));
+            System.out.println("  ├──────────────────────┬──────────────────────────────┤");
+            System.out.printf ("  │  주문 수량  %5d개  │  부족분       %5d개        │%n",
+                    o.getQuantity(), p.getShortageQty());
+            System.out.printf ("  │  실 생산량  %5d개  │  총 생산시간  %5dh         │%n",
+                    p.getProductionQty(), p.getEstimatedHours());
+            System.out.println("  ├──────────────────────┴──────────────────────────────┤");
+            System.out.printf ("  │%s│%n", padVisual(String.format("  시작      %s", fmtDt(p.getStartedAt())), 53));
+            System.out.printf ("  │%s│%n", padVisual(String.format("  완료 예정  %s  (남은 %.1fh)", fmtDt(endAt), remainH), 53));
+            System.out.printf ("  │%s│%n", padVisual(String.format("  진행률    %s  %3.0f%%", progressBar(ratio, 12), ratio * 100), 53));
+            System.out.printf ("  │%s│%n", padVisual(String.format("  현재 생산량  ≈ %3d개 / %3d개", curQty, p.getProductionQty()), 53));
+            System.out.println("  └─────────────────────────────────────────────────────┘");
+            System.out.println();
+        }
+    }
+
+    public void renderProductionQueue(List<Production> productions, List<Order> orders, List<Sample> samples) {
+        printHeader("메인 > 생산라인 조회 > 대기 목록  [자동 갱신 2.5초]");
+        System.out.println("  생산 완료는 예상 시간 경과 시 자동 처리됩니다.  스케줄링: FIFO");
+        long now = System.currentTimeMillis();
+
+        if (productions.isEmpty()) {
+            System.out.println();
+            showInfo("생산 대기 중인 항목이 없습니다.");
+            return;
+        }
+        Map<String, Order>  om = orderMap(orders);
+        Map<String, Sample> sm = sampleMap(samples);
+        System.out.printf("%n  총 %d건 대기 중%n%n", productions.size());
+
+        for (int i = 0; i < productions.size(); i++) {
+            Production p = productions.get(i);
+            Order  o     = om.get(p.getOrderId());
+            Sample s     = sm.get(p.getSampleId());
+            if (o == null || s == null) continue;
+
+            double remainH = Math.max(0.0, p.getEstimatedHours() - (now - p.getStartedAt()) / 3_600_000.0);
+            long   endAt   = p.getStartedAt() + p.getEstimatedHours() * 3_600_000L;
+
+            System.out.printf("  [ %d순위 ]%n", i + 1);
+            System.out.println("  ┌─────────────────────────────────────────────────────┐");
+            System.out.printf ("  │  %-8s  →  %-8s%30s│%n", p.getProductionId(), o.getOrderId(), "");
+            System.out.printf ("  │%s│%n", padVisual(String.format("  시료  %s  %s  (수율 %.2f / 단위 %dh/개)",
+                    s.getSampleId(), s.getName(), s.getYield(), s.getProductionTime()), 53));
+            System.out.println("  ├──────────────────────┬──────────────────────────────┤");
+            System.out.printf ("  │  주문 수량  %5d개  │  부족분       %5d개        │%n",
+                    o.getQuantity(), p.getShortageQty());
+            System.out.printf ("  │  실 생산량  %5d개  │  총 생산시간  %5dh         │%n",
+                    p.getProductionQty(), p.getEstimatedHours());
+            System.out.println("  ├──────────────────────┴──────────────────────────────┤");
+            System.out.printf ("  │%s│%n", padVisual(String.format("  시작      %s", fmtDt(p.getStartedAt())), 53));
+            System.out.printf ("  │%s│%n", padVisual(String.format("  완료 예정  %s  (남은 %.1fh)", fmtDt(endAt), remainH), 53));
+            System.out.println("  └─────────────────────────────────────────────────────┘");
+            System.out.println();
+        }
+    }
+}
