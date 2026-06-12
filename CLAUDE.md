@@ -27,6 +27,7 @@
 | Test DB | H2 in-memory (`jdbc:h2:mem:testdb`) |
 | Unit Test | JUnit 5.10.x |
 | Mocking | Mockito 5.x |
+| Lombok | 1.18.32 (boilerplate 제거) |
 | UI | Console (ANSI color codes) |
 
 ### 빌드 및 실행
@@ -141,6 +142,17 @@ RESERVED → (승인, 재고 충분) → CONFIRMED → (출고) → RELEASE
 | 변수 | camelCase | `orderId`, `sampleStock` |
 | 상수 | UPPER_SNAKE_CASE | `DB_URL` |
 | 패키지 | lowercase | `ssemi.repository` |
+
+### Lombok 사용 규칙
+
+모델 클래스에만 적용. Controller/Repository/View에는 사용하지 않는다.
+
+| 어노테이션 | 적용 대상 |
+|-----------|-----------|
+| `@Getter` | 모든 모델 클래스 |
+| `@Setter` | 가변 필드 개별 적용 (`@Setter` on field) |
+| `@AllArgsConstructor` | 모든 모델 클래스 |
+| `@ToString` | 모든 모델 클래스 |
 
 ### SQL 규칙
 
