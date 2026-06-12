@@ -18,7 +18,7 @@ public class OrderRepository {
     }
 
     public void save(Order order) {
-        String sql = "INSERT INTO ORDERS (ORDER_ID, SAMPLE_ID, CUSTOMER_ID, QUANTITY, STATUS) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO ORDERS (ORDER_ID, SAMPLE_ID, CUSTOMER_ID, QUANTITY, STATUS, CREATED_AT) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, order.getOrderId());
@@ -26,6 +26,7 @@ public class OrderRepository {
             pstmt.setString(3, order.getCustomerId());
             pstmt.setInt(4, order.getQuantity());
             pstmt.setString(5, order.getStatus().name());
+            pstmt.setLong(6, order.getCreatedAt());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("주문 저장 실패: " + order.getOrderId(), e);
@@ -64,7 +65,7 @@ public class OrderRepository {
     }
 
     public List<Order> findByStatus(OrderStatus status) {
-        String sql = "SELECT * FROM ORDERS WHERE STATUS = ? ORDER BY ORDER_ID";
+        String sql = "SELECT * FROM ORDERS WHERE STATUS = ? ORDER BY CREATED_AT ASC";
         List<Order> orders = new ArrayList<>();
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -112,7 +113,8 @@ public class OrderRepository {
                 rs.getString("SAMPLE_ID"),
                 rs.getString("CUSTOMER_ID"),
                 rs.getInt("QUANTITY"),
-                OrderStatus.valueOf(rs.getString("STATUS"))
+                OrderStatus.valueOf(rs.getString("STATUS")),
+                rs.getLong("CREATED_AT")
         );
     }
 }

@@ -17,13 +17,15 @@ public class SampleRepository {
     }
 
     public void save(Sample sample) {
-        String sql = "INSERT INTO SAMPLE (SAMPLE_ID, NAME, SPEC, STOCK) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO SAMPLE (SAMPLE_ID, NAME, SPEC, STOCK, YIELD, PRODUCTION_TIME) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, sample.getSampleId());
             pstmt.setString(2, sample.getName());
             pstmt.setString(3, sample.getSpec());
             pstmt.setInt(4, sample.getStock());
+            pstmt.setDouble(5, sample.getYield());
+            pstmt.setInt(6, sample.getProductionTime());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("시료 저장 실패: " + sample.getSampleId(), e);
@@ -62,13 +64,15 @@ public class SampleRepository {
     }
 
     public void update(Sample sample) {
-        String sql = "UPDATE SAMPLE SET NAME = ?, SPEC = ?, STOCK = ? WHERE SAMPLE_ID = ?";
+        String sql = "UPDATE SAMPLE SET NAME = ?, SPEC = ?, STOCK = ?, YIELD = ?, PRODUCTION_TIME = ? WHERE SAMPLE_ID = ?";
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, sample.getName());
             pstmt.setString(2, sample.getSpec());
             pstmt.setInt(3, sample.getStock());
-            pstmt.setString(4, sample.getSampleId());
+            pstmt.setDouble(4, sample.getYield());
+            pstmt.setInt(5, sample.getProductionTime());
+            pstmt.setString(6, sample.getSampleId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("시료 수정 실패: " + sample.getSampleId(), e);
@@ -106,7 +110,9 @@ public class SampleRepository {
                 rs.getString("SAMPLE_ID"),
                 rs.getString("NAME"),
                 rs.getString("SPEC"),
-                rs.getInt("STOCK")
+                rs.getInt("STOCK"),
+                rs.getDouble("YIELD"),
+                rs.getInt("PRODUCTION_TIME")
         );
     }
 }

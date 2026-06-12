@@ -6,14 +6,13 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Getter
-@Setter
 @AllArgsConstructor
 @ToString
-public class Sample {
+public class Production {
+    private String productionId;
+    private String orderId;
     private String sampleId;
-    private String name;
-    private String spec;
-    private int stock;
-    private double yield;
-    private int productionTime;
+    private int productionQty;
+    private long estimatedHours;
+    @Setter private boolean completed;
 }

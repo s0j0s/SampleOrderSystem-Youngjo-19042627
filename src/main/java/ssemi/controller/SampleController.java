@@ -14,9 +14,9 @@ public class SampleController {
         this.sampleRepository = sampleRepository;
     }
 
-    public Sample registerSample(String name, String spec, int stock) {
+    public Sample registerSample(String name, String spec, int stock, double yield, int productionTime) {
         String sampleId = String.format("S-%03d", sampleRepository.nextSequence());
-        Sample sample = new Sample(sampleId, name, spec, stock);
+        Sample sample = new Sample(sampleId, name, spec, stock, yield, productionTime);
         sampleRepository.save(sample);
         return sample;
     }

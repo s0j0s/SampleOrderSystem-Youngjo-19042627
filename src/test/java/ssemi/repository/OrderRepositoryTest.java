@@ -29,13 +29,14 @@ class OrderRepositoryTest {
         dbManager = new DatabaseManager(TEST_DB_URL);
         sampleRepository = new SampleRepository(dbManager);
         orderRepository = new OrderRepository(dbManager);
-        sampleRepository.save(new Sample("S-001", "GaN 웨이퍼", "4인치", 50));
+        sampleRepository.save(new Sample("S-001", "GaN 웨이퍼", "4인치", 50, 0.9, 2));
     }
 
     @AfterEach
     void tearDown() throws SQLException {
         try (Connection conn = dbManager.getConnection();
              Statement stmt = conn.createStatement()) {
+            stmt.execute("DROP TABLE IF EXISTS PRODUCTION");
             stmt.execute("DROP TABLE IF EXISTS ORDERS");
             stmt.execute("DROP TABLE IF EXISTS SAMPLE");
         }
@@ -43,19 +44,19 @@ class OrderRepositoryTest {
 
     @Test
     void 주문_저장_후_조회_성공() {
-        Order order = new Order("ORD-0001", "S-001", "CUST-001", 10, OrderStatus.PENDING);
+        Order order = new Order("ORD-0001", "S-001", "CUST-001", 10, OrderStatus.RESERVED, 1000L);
         orderRepository.save(order);
 
         Optional<Order> found = orderRepository.findById("ORD-0001");
         assertTrue(found.isPresent());
         assertEquals("S-001", found.get().getSampleId());
-        assertEquals(OrderStatus.PENDING, found.get().getStatus());
+        assertEquals(OrderStatus.RESERVED, found.get().getStatus());
     }
 
     @Test
     void 전체_주문_목록_조회() {
-        orderRepository.save(new Order("ORD-0001", "S-001", "CUST-001", 10, OrderStatus.PENDING));
-        orderRepository.save(new Order("ORD-0002", "S-001", "CUST-002", 5, OrderStatus.PENDING));
+        orderRepository.save(new Order("ORD-0001", "S-001", "CUST-001", 10, OrderStatus.RESERVED, 1000L));
+        orderRepository.save(new Order("ORD-0002", "S-001", "CUST-002", 5, OrderStatus.RESERVED, 2000L));
 
         List<Order> orders = orderRepository.findAll();
         assertEquals(2, orders.size());
@@ -63,17 +64,17 @@ class OrderRepositoryTest {
 
     @Test
     void 상태별_주문_조회() {
-        orderRepository.save(new Order("ORD-0001", "S-001", "CUST-001", 10, OrderStatus.PENDING));
-        orderRepository.save(new Order("ORD-0002", "S-001", "CUST-002", 5, OrderStatus.CONFIRMED));
+        orderRepository.save(new Order("ORD-0001", "S-001", "CUST-001", 10, OrderStatus.RESERVED, 1000L));
+        orderRepository.save(new Order("ORD-0002", "S-001", "CUST-002", 5, OrderStatus.CONFIRMED, 2000L));
 
-        List<Order> pending = orderRepository.findByStatus(OrderStatus.PENDING);
-        assertEquals(1, pending.size());
-        assertEquals("ORD-0001", pending.get(0).getOrderId());
+        List<Order> reserved = orderRepository.findByStatus(OrderStatus.RESERVED);
+        assertEquals(1, reserved.size());
+        assertEquals("ORD-0001", reserved.get(0).getOrderId());
     }
 
     @Test
     void 주문_상태_수정() {
-        orderRepository.save(new Order("ORD-0001", "S-001", "CUST-001", 10, OrderStatus.PENDING));
+        orderRepository.save(new Order("ORD-0001", "S-001", "CUST-001", 10, OrderStatus.RESERVED, 1000L));
         orderRepository.updateStatus("ORD-0001", OrderStatus.CONFIRMED);
 
         Optional<Order> found = orderRepository.findById("ORD-0001");

@@ -24,7 +24,8 @@ public class OrderController {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시료: " + sampleId));
 
         String orderId = String.format("ORD-%04d", orderRepository.nextSequence());
-        Order order = new Order(orderId, sampleId, customerId, quantity, OrderStatus.PENDING);
+        Order order = new Order(orderId, sampleId, customerId, quantity,
+                OrderStatus.RESERVED, System.currentTimeMillis());
         orderRepository.save(order);
         return order;
     }
@@ -37,6 +38,10 @@ public class OrderController {
         return orderRepository.findById(orderId);
     }
 
+    public List<Order> getOrdersByStatus(OrderStatus status) {
+        return orderRepository.findByStatus(status);
+    }
+
     /**
      * 주문 승인: 재고 >= 수량 → CONFIRMED (재고 차감)
      *           재고 <  수량 → PRODUCING
@@ -45,8 +50,8 @@ public class OrderController {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주문: " + orderId));
 
-        if (order.getStatus() != OrderStatus.PENDING) {
-            throw new IllegalStateException("PENDING 상태의 주문만 승인 가능: " + order.getStatus());
+        if (order.getStatus() != OrderStatus.RESERVED) {
+            throw new IllegalStateException("RESERVED 상태의 주문만 승인 가능: " + order.getStatus());
         }
 
         Sample sample = sampleRepository.findById(order.getSampleId())
@@ -68,8 +73,8 @@ public class OrderController {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주문: " + orderId));
 
-        if (order.getStatus() != OrderStatus.PENDING) {
-            throw new IllegalStateException("PENDING 상태의 주문만 거부 가능: " + order.getStatus());
+        if (order.getStatus() != OrderStatus.RESERVED) {
+            throw new IllegalStateException("RESERVED 상태의 주문만 거부 가능: " + order.getStatus());
         }
 
         orderRepository.updateStatus(orderId, OrderStatus.REJECTED);
@@ -81,16 +86,12 @@ public class OrderController {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주문: " + orderId));
 
-        if (order.getStatus() != OrderStatus.CONFIRMED && order.getStatus() != OrderStatus.PRODUCING) {
-            throw new IllegalStateException("CONFIRMED 또는 PRODUCING 상태의 주문만 출고 가능: " + order.getStatus());
+        if (order.getStatus() != OrderStatus.CONFIRMED) {
+            throw new IllegalStateException("CONFIRMED 상태의 주문만 출고 가능: " + order.getStatus());
         }
 
-        orderRepository.updateStatus(orderId, OrderStatus.RELEASED);
-        order.setStatus(OrderStatus.RELEASED);
+        orderRepository.updateStatus(orderId, OrderStatus.RELEASE);
+        order.setStatus(OrderStatus.RELEASE);
         return order;
-    }
-
-    public List<Order> getOrdersByStatus(OrderStatus status) {
-        return orderRepository.findByStatus(status);
     }
 }

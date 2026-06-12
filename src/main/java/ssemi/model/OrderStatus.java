@@ -1,10 +1,9 @@
 package ssemi.model;
 
 public enum OrderStatus {
-    PENDING,
-    APPROVED,
+    RESERVED,
     CONFIRMED,
     PRODUCING,
-    RELEASED,
+    RELEASE,
     REJECTED
 }

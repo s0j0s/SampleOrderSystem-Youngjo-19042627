@@ -31,6 +31,7 @@ class SampleRepositoryTest {
     void tearDown() throws SQLException {
         try (Connection conn = dbManager.getConnection();
              Statement stmt = conn.createStatement()) {
+            stmt.execute("DROP TABLE IF EXISTS PRODUCTION");
             stmt.execute("DROP TABLE IF EXISTS ORDERS");
             stmt.execute("DROP TABLE IF EXISTS SAMPLE");
         }
@@ -38,19 +39,21 @@ class SampleRepositoryTest {
 
     @Test
     void 시료_저장_후_조회_성공() {
-        Sample sample = new Sample("S-001", "GaN 웨이퍼", "4인치 GaN", 50);
+        Sample sample = new Sample("S-001", "GaN 웨이퍼", "4인치 GaN", 50, 0.9, 2);
         repository.save(sample);
 
         Optional<Sample> found = repository.findById("S-001");
         assertTrue(found.isPresent());
         assertEquals("GaN 웨이퍼", found.get().getName());
         assertEquals(50, found.get().getStock());
+        assertEquals(0.9, found.get().getYield());
+        assertEquals(2, found.get().getProductionTime());
     }
 
     @Test
     void 전체_시료_목록_조회() {
-        repository.save(new Sample("S-001", "GaN 웨이퍼", "4인치", 30));
-        repository.save(new Sample("S-002", "SiC 웨이퍼", "6인치", 20));
+        repository.save(new Sample("S-001", "GaN 웨이퍼", "4인치", 30, 0.9, 2));
+        repository.save(new Sample("S-002", "SiC 웨이퍼", "6인치", 20, 0.8, 3));
 
         List<Sample> samples = repository.findAll();
         assertEquals(2, samples.size());
@@ -58,7 +61,7 @@ class SampleRepositoryTest {
 
     @Test
     void 재고_수정() {
-        repository.save(new Sample("S-001", "GaN 웨이퍼", "4인치", 50));
+        repository.save(new Sample("S-001", "GaN 웨이퍼", "4인치", 50, 0.9, 2));
         repository.updateStock("S-001", 30);
 
         Optional<Sample> found = repository.findById("S-001");
@@ -75,7 +78,7 @@ class SampleRepositoryTest {
     @Test
     void 시퀀스_번호는_저장된_개수_더하기_1() {
         assertEquals(1, repository.nextSequence());
-        repository.save(new Sample("S-001", "GaN 웨이퍼", "4인치", 50));
+        repository.save(new Sample("S-001", "GaN 웨이퍼", "4인치", 50, 0.9, 2));
         assertEquals(2, repository.nextSequence());
     }
 }
