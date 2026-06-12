@@ -16,17 +16,16 @@ public class OrderView extends BaseView {
             return;
         }
         Map<String, Sample> sm = sampleMap(samples);
-        System.out.println("  ┌──────────────┬──────────────────────────┬───────┐");
-        System.out.println("  │   주문 ID    │  시료                    │  수량 │");
-        System.out.println("  ├──────────────┼──────────────────────────┼───────┤");
+        System.out.printf("  %-9s  %-26s  %5s%n", "주문 ID", "시료", "수량");
+        System.out.println(SEP_THIN);
         for (Order o : orders) {
             Sample s = sm.get(o.getSampleId());
             String sName = s != null ? s.getName() + " (" + o.getSampleId() + ")" : o.getSampleId();
-            System.out.printf("  │ %s %-9s │ %-24s │  %3d  │%n",
+            System.out.printf("  %s %-9s  %-26s  %5d%n",
                     statusEmoji(o.getStatus()), o.getOrderId(), sName, o.getQuantity());
         }
-        System.out.println("  └──────────────┴──────────────────────────┴───────┘");
-        System.out.printf("%n  총 %d건    📋 RESERVED  ✅ CONFIRMED  ⏳ PRODUCING  📦 RELEASE%n",
+        System.out.println(SEP_THIN);
+        System.out.printf("  총 %d건    📋 RESERVED  ✅ CONFIRMED  ⏳ PRODUCING  📦 RELEASE%n",
                 orders.size());
     }
 
@@ -37,41 +36,40 @@ public class OrderView extends BaseView {
             return;
         }
         Map<String, Sample> sm = sampleMap(samples);
-        System.out.println("  ┌────┬──────────────┬──────────────────────────┬───────┐");
-        System.out.println("  │  # │   주문 ID    │  시료                    │  수량 │");
-        System.out.println("  ├────┼──────────────┼──────────────────────────┼───────┤");
+        System.out.printf("  %3s  %-9s  %-26s  %5s%n", "번호", "주문 ID", "시료", "수량");
+        System.out.println(SEP_THIN);
         for (int i = 0; i < orders.size(); i++) {
             Order o = orders.get(i);
             Sample s = sm.get(o.getSampleId());
             String sName = s != null ? s.getName() + " (" + o.getSampleId() + ")" : o.getSampleId();
-            System.out.printf("  │ %2d │ %s %-9s │ %-24s │  %3d  │%n",
+            System.out.printf("  [%2d]  %s %-9s  %-26s  %5d%n",
                     i + 1, statusEmoji(o.getStatus()), o.getOrderId(), sName, o.getQuantity());
         }
-        System.out.println("  └────┴──────────────┴──────────────────────────┴───────┘");
+        System.out.println(SEP_THIN);
     }
 
     public void showOrderDetail(Order order, Sample sample) {
         System.out.println();
-        System.out.println("  ─────────────────────────────────────────────────────");
+        System.out.println(SEP_THICK);
         System.out.println("  [ 주문 상세 ]");
-        System.out.println("  ─────────────────────────────────────────────────────");
-        System.out.printf ("  주문 ID       : %s%n", order.getOrderId());
-        System.out.printf ("  시료 ID       : %s  (%s)%n", sample.getSampleId(), sample.getName());
-        System.out.printf ("  사양          : %s%n", sample.getSpec());
-        System.out.printf ("  현재 재고     : %d개%n", sample.getStock());
-        System.out.printf ("  수율          : %.2f%n", sample.getYield());
-        System.out.printf ("  단위 생산시간 : %dh/개%n", sample.getProductionTime());
-        System.out.println("  ─────────────────────────────────────────────────────");
-        System.out.printf ("  주문 수량     : %d개%n", order.getQuantity());
+        System.out.println(SEP_THIN);
+        System.out.printf("  주문 ID       : %s%n", order.getOrderId());
+        System.out.printf("  시료 ID       : %s  (%s)%n", sample.getSampleId(), sample.getName());
+        System.out.printf("  사양          : %s%n", sample.getSpec());
+        System.out.printf("  현재 재고     : %d개%n", sample.getStock());
+        System.out.printf("  수율          : %.2f%n", sample.getYield());
+        System.out.printf("  단위 생산시간 : %dh/개%n", sample.getProductionTime());
+        System.out.println(SEP_THIN);
+        System.out.printf("  주문 수량     : %d개%n", order.getQuantity());
         if (sample.getStock() >= order.getQuantity()) {
             System.out.println(GREEN + "  재고 상태     : ✅ 충분  →  승인 시 즉시 CONFIRMED" + RESET);
         } else {
             int shortage = order.getQuantity() - sample.getStock();
             System.out.println(YELLOW + "  재고 상태     : ⚠️  부족  →  승인 시 PRODUCING (생산 필요)" + RESET);
-            System.out.printf (YELLOW + "  부족분        : %d개  (재고 %d개 < 주문 %d개)%n" + RESET,
+            System.out.printf(YELLOW + "  부족분        : %d개  (재고 %d개 < 주문 %d개)%n" + RESET,
                     shortage, sample.getStock(), order.getQuantity());
         }
-        System.out.println("  ─────────────────────────────────────────────────────");
+        System.out.println(SEP_THIN);
         System.out.println("  처리를 선택하세요.");
         System.out.print("  [1] 승인   [2] 거절   [0] 취소\n  선택> ");
     }

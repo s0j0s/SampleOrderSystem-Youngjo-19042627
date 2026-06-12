@@ -25,6 +25,9 @@ public abstract class BaseView {
     protected static final String RED    = "\033[31m";
     protected static final String CLEAR  = "\033[2J\033[H";
 
+    protected static final String SEP_THICK = "================================================================================";
+    protected static final String SEP_THIN  = "--------------------------------------------------------------------------------";
+
     private static final DateTimeFormatter DT_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     // stdin은 하나이므로 static 공유 스캐너 사용
@@ -34,10 +37,9 @@ public abstract class BaseView {
 
     public void printHeader(String path) {
         System.out.println();
-        System.out.println(CYAN + "  ╔══════════════════════════════════════════════════════╗");
-        System.out.println(       "  ║  🔬 S-SEMI  │  " + path);
-        System.out.println(       "  ╚══════════════════════════════════════════════════════╝" + RESET);
-        System.out.println();
+        System.out.println(SEP_THICK);
+        System.out.println(path);
+        System.out.println(SEP_THICK);
     }
 
     protected String statusEmoji(OrderStatus status) {

@@ -19,12 +19,12 @@ public class MonitorView extends BaseView {
         long maxCount  = Math.max(1, Math.max(Math.max(reserved, confirmed), Math.max(producing, release)));
 
         System.out.println("  [ 주문 현황 ]  (REJECTED 제외)");
-        System.out.println("  ─────────────────────────────────────────────────────");
-        System.out.printf ("  📋 RESERVED   %s  %3d건%n", bar((int) reserved,  (int) maxCount, 16), reserved);
-        System.out.printf ("  ✅ CONFIRMED  %s  %3d건%n", bar((int) confirmed, (int) maxCount, 16), confirmed);
-        System.out.printf ("  ⏳ PRODUCING  %s  %3d건%n", bar((int) producing, (int) maxCount, 16), producing);
-        System.out.printf ("  📦 RELEASE    %s  %3d건%n", bar((int) release,   (int) maxCount, 16), release);
-        System.out.println("  ─────────────────────────────────────────────────────");
+        System.out.println(SEP_THIN);
+        System.out.printf("  📋 RESERVED   %s  %3d건%n", bar((int) reserved,  (int) maxCount, 16), reserved);
+        System.out.printf("  ✅ CONFIRMED  %s  %3d건%n", bar((int) confirmed, (int) maxCount, 16), confirmed);
+        System.out.printf("  ⏳ PRODUCING  %s  %3d건%n", bar((int) producing, (int) maxCount, 16), producing);
+        System.out.printf("  📦 RELEASE    %s  %3d건%n", bar((int) release,   (int) maxCount, 16), release);
+        System.out.println(SEP_THIN);
 
         Map<String, Integer> resMap = reservedQtyMap(orders);
         int maxStock = samples.stream().mapToInt(Sample::getStock).max().orElse(1);
@@ -32,7 +32,7 @@ public class MonitorView extends BaseView {
 
         System.out.println();
         System.out.println("  [ 재고 현황 ]");
-        System.out.println("  ─────────────────────────────────────────────────────");
+        System.out.println(SEP_THIN);
         for (Sample s : samples) {
             int resQty = resMap.getOrDefault(s.getSampleId(), 0);
             String bChart = bar(s.getStock(), maxStock, 12);
@@ -47,7 +47,7 @@ public class MonitorView extends BaseView {
             System.out.printf("  %-7s  %-16s  재고 %4d개  %s%n",
                     s.getSampleId(), s.getName(), s.getStock(), statusLine);
         }
-        System.out.println("  ─────────────────────────────────────────────────────");
+        System.out.println(SEP_THIN);
         System.out.printf("  총 %d종 / 총 재고 %d개%n",
                 samples.size(), samples.stream().mapToInt(Sample::getStock).sum());
     }

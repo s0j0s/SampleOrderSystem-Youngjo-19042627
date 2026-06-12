@@ -32,21 +32,19 @@ public class ProductionView extends BaseView {
             int    curQty   = (int)(ratio * p.getProductionQty());
             long   endAt    = p.getStartedAt() + p.getEstimatedHours() * 3_600_000L;
 
-            System.out.println("  ┌─────────────────────────────────────────────────────┐");
-            System.out.printf ("  │  ⏳ %-8s  →  %-8s%27s│%n", p.getProductionId(), o.getOrderId(), "");
-            System.out.printf ("  │%s│%n", padVisual(String.format("  시료  %s  %s  (수율 %.2f / 단위 %dh/개)",
-                    s.getSampleId(), s.getName(), s.getYield(), s.getProductionTime()), 53));
-            System.out.println("  ├──────────────────────┬──────────────────────────────┤");
-            System.out.printf ("  │  주문 수량  %5d개  │  부족분       %5d개        │%n",
+            System.out.println(SEP_THIN);
+            System.out.printf("  ⏳ %-8s  ->  %-8s%n", p.getProductionId(), o.getOrderId());
+            System.out.printf("  시료  %s  %s  (수율 %.2f / 단위 %dh/개)%n",
+                    s.getSampleId(), s.getName(), s.getYield(), s.getProductionTime());
+            System.out.println(SEP_THIN);
+            System.out.printf("  주문 수량: %5d개    부족분: %5d개%n",
                     o.getQuantity(), p.getShortageQty());
-            System.out.printf ("  │  실 생산량  %5d개  │  총 생산시간  %5dh         │%n",
+            System.out.printf("  실 생산량: %5d개    총 생산시간: %dh%n",
                     p.getProductionQty(), p.getEstimatedHours());
-            System.out.println("  ├──────────────────────┴──────────────────────────────┤");
-            System.out.printf ("  │%s│%n", padVisual(String.format("  시작      %s", fmtDt(p.getStartedAt())), 53));
-            System.out.printf ("  │%s│%n", padVisual(String.format("  완료 예정  %s  (남은 %.1fh)", fmtDt(endAt), remainH), 53));
-            System.out.printf ("  │%s│%n", padVisual(String.format("  진행률    %s  %3.0f%%", progressBar(ratio, 12), ratio * 100), 53));
-            System.out.printf ("  │%s│%n", padVisual(String.format("  현재 생산량  ≈ %3d개 / %3d개", curQty, p.getProductionQty()), 53));
-            System.out.println("  └─────────────────────────────────────────────────────┘");
+            System.out.printf("  시작:     %s%n", fmtDt(p.getStartedAt()));
+            System.out.printf("  완료 예정: %s  (남은 %.1fh)%n", fmtDt(endAt), remainH);
+            System.out.printf("  진행률:   [%s]  %3.0f%%%n", progressBar(ratio, 16), ratio * 100);
+            System.out.printf("  현재 생산량: %d개 / %d개%n", curQty, p.getProductionQty());
             System.out.println();
         }
     }
@@ -75,19 +73,16 @@ public class ProductionView extends BaseView {
             long   endAt   = p.getStartedAt() + p.getEstimatedHours() * 3_600_000L;
 
             System.out.printf("  [ %d순위 ]%n", i + 1);
-            System.out.println("  ┌─────────────────────────────────────────────────────┐");
-            System.out.printf ("  │  %-8s  →  %-8s%30s│%n", p.getProductionId(), o.getOrderId(), "");
-            System.out.printf ("  │%s│%n", padVisual(String.format("  시료  %s  %s  (수율 %.2f / 단위 %dh/개)",
-                    s.getSampleId(), s.getName(), s.getYield(), s.getProductionTime()), 53));
-            System.out.println("  ├──────────────────────┬──────────────────────────────┤");
-            System.out.printf ("  │  주문 수량  %5d개  │  부족분       %5d개        │%n",
+            System.out.println(SEP_THIN);
+            System.out.printf("  %-8s  ->  %-8s%n", p.getProductionId(), o.getOrderId());
+            System.out.printf("  시료  %s  %s  (수율 %.2f / 단위 %dh/개)%n",
+                    s.getSampleId(), s.getName(), s.getYield(), s.getProductionTime());
+            System.out.printf("  주문 수량: %5d개    부족분: %5d개%n",
                     o.getQuantity(), p.getShortageQty());
-            System.out.printf ("  │  실 생산량  %5d개  │  총 생산시간  %5dh         │%n",
+            System.out.printf("  실 생산량: %5d개    총 생산시간: %dh%n",
                     p.getProductionQty(), p.getEstimatedHours());
-            System.out.println("  ├──────────────────────┴──────────────────────────────┤");
-            System.out.printf ("  │%s│%n", padVisual(String.format("  시작      %s", fmtDt(p.getStartedAt())), 53));
-            System.out.printf ("  │%s│%n", padVisual(String.format("  완료 예정  %s  (남은 %.1fh)", fmtDt(endAt), remainH), 53));
-            System.out.println("  └─────────────────────────────────────────────────────┘");
+            System.out.printf("  시작:     %s%n", fmtDt(p.getStartedAt()));
+            System.out.printf("  완료 예정: %s  (남은 %.1fh)%n", fmtDt(endAt), remainH);
             System.out.println();
         }
     }
