@@ -33,8 +33,8 @@
 ### 빌드 및 실행
 
 ```bash
-# Windows
-gradlew.bat run
+# Windows (한글/특수문자 깨짐 없이 실행)
+run.bat           # 권장: chcp 65001 + GRADLE_OPTS 자동 설정
 gradlew.bat test
 gradlew.bat build
 

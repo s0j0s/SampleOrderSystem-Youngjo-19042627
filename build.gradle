@@ -42,6 +42,11 @@ dependencies {
     testImplementation 'org.mockito:mockito-junit-jupiter:5.11.0'
 }
 
+run {
+    standardInput = System.in
+    jvmArgs '-Dfile.encoding=UTF-8', '-Dstdout.encoding=UTF-8', '-Dstderr.encoding=UTF-8'
+}
+
 test {
     useJUnitPlatform()
     testLogging {

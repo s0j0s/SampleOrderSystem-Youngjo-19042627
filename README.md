@@ -15,8 +15,11 @@
 ### 터미널 (Windows)
 
 ```bat
-gradlew.bat run
+run.bat
 ```
+
+> `gradlew.bat run`은 한글·특수문자가 깨질 수 있음.  
+> `run.bat`은 `chcp 65001` + `GRADLE_OPTS` 인코딩 설정을 자동으로 처리함.
 
 ### 터미널 (macOS / Linux)
 
