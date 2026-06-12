@@ -105,6 +105,23 @@ public class SampleRepository {
         return 1;
     }
 
+    public List<Sample> searchByName(String keyword) {
+        String sql = "SELECT * FROM SAMPLE WHERE NAME LIKE ? ORDER BY SAMPLE_ID";
+        List<Sample> samples = new ArrayList<>();
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, "%" + keyword + "%");
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    samples.add(mapRow(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("시료 검색 실패: " + keyword, e);
+        }
+        return samples;
+    }
+
     private Sample mapRow(ResultSet rs) throws SQLException {
         return new Sample(
                 rs.getString("SAMPLE_ID"),

@@ -81,4 +81,16 @@ class SampleRepositoryTest {
         repository.save(new Sample("S-001", "GaN 웨이퍼", "4인치", 50, 0.9, 2));
         assertEquals(2, repository.nextSequence());
     }
+
+    @Test
+    void 이름_키워드_검색() {
+        repository.save(new Sample("S-001", "GaN 웨이퍼", "4인치", 30, 0.9, 2));
+        repository.save(new Sample("S-002", "SiC 웨이퍼", "6인치", 20, 0.8, 3));
+        repository.save(new Sample("S-003", "GaN 에피", "2인치", 10, 0.85, 4));
+
+        List<Sample> result = repository.searchByName("GaN");
+
+        assertEquals(2, result.size());
+        assertTrue(result.stream().allMatch(s -> s.getName().contains("GaN")));
+    }
 }
