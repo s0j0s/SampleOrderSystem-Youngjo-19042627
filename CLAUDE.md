@@ -35,7 +35,7 @@
 ```bash
 # Windows (한글/특수문자 깨짐 없이 실행)
 run.bat           # 권장: chcp 65001 + GRADLE_OPTS 자동 설정
-gradlew.bat test
+test.bat          # 권장: 테스트 이름 한글 정상 출력
 gradlew.bat build
 
 # macOS / Linux

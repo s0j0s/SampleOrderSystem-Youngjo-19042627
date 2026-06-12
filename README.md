@@ -38,8 +38,8 @@ run.bat
 ## 테스트 실행
 
 ```bat
-gradlew.bat test          # 전체 테스트
-gradlew.bat test --info   # 상세 출력
+test.bat                  # 전체 테스트 (한글 테스트명 정상 출력)
+test.bat --info           # 상세 출력
 ```
 
 ## 빌드
