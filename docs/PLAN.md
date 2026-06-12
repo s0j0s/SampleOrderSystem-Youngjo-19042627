@@ -352,12 +352,12 @@ docs: PLAN.md 완료 체크리스트 업데이트
 
 ## 완료 체크리스트
 
-- [ ] Phase 1: 모델 컴파일 통과, Production 클래스 생성
-- [ ] Phase 2: `./gradlew run` DB 초기화 정상
-- [ ] Phase 3: `./gradlew test` Repository 테스트 전체 통과
-- [ ] Phase 4: `./gradlew test` Controller 테스트 전체 통과
-- [ ] Phase 5: `./gradlew run` 전체 메뉴 수동 동작 확인
-- [ ] Phase 6: `./gradlew test` 30개+ 통과, 통합 시나리오 4개 수동 검증
+- [x] Phase 1: 모델 컴파일 통과, Production 클래스 생성
+- [x] Phase 2: `./gradlew run` DB 초기화 정상
+- [x] Phase 3: `./gradlew test` Repository 테스트 전체 통과
+- [x] Phase 4: `./gradlew test` Controller 테스트 전체 통과
+- [x] Phase 5: `./gradlew run` 전체 메뉴 수동 동작 확인
+- [x] Phase 6: `./gradlew test` 52개 통과 (커버리지 100%), 수동 시나리오 A~D 완료
 
 ---
 
