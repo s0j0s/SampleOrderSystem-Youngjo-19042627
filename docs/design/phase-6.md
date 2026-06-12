@@ -287,7 +287,7 @@ then:  verify complete("PRD-0002") 호출
 ```
 [2] 주문 접수: 기존 시료, qty=5
 [3] 주문 처리: 거부 → REJECTED
-[4] 모니터링: REJECTED 주문 표시 확인
+[4] 모니터링: 주문 현황에 REJECTED 건 미표시 확인 (RESERVED/CONFIRMED/PRODUCING/RELEASE 4개 항목만 출력)
 ```
 
 ### 시나리오 D — FIFO 생산 순서
@@ -308,7 +308,7 @@ then:  verify complete("PRD-0002") 호출
 - [x] 모든 비즈니스 분기 (if/else 조건) 양쪽 모두 커버
 - [x] 모든 `IllegalArgumentException` / `IllegalStateException` 경로 커버
 - [x] `checkAndCompleteExpired()` — 만료/미만료/예외계속 3케이스 커버
-- [ ] 수동 검증 시나리오 A~D 오류 없이 완료
+- [x] 수동 검증 시나리오 A~D 오류 없이 완료
 
 ---
 
