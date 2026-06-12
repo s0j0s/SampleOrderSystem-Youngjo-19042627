@@ -209,3 +209,27 @@ public class Production {
 - `sample.getYield()`, `sample.getProductionTime()` 호출 가능
 - `order.getCreatedAt()` 호출 가능
 - `production.isCompleted()`, `production.setCompleted(true)` 호출 가능
+
+---
+
+## 검토 체크리스트
+
+> Action 진행 전 아래 항목을 확인하고 승인해주세요.
+
+### 도메인 모델
+- [ ] `OrderStatus` 상태 5개(RESERVED / CONFIRMED / PRODUCING / RELEASE / REJECTED)가 PRD 상태 전이도와 일치하는가?
+- [ ] `Sample`에 `yield`(0.0~1.0), `productionTime`(시간) 필드 추가가 맞는가?
+- [ ] `Order`에 `createdAt`(epoch millis)을 FIFO 정렬용으로 추가하는 방향이 맞는가?
+- [ ] `Production` 필드 6개(productionId, orderId, sampleId, productionQty, estimatedHours, completed)가 충분한가?
+
+### Lombok 적용 범위
+- [ ] 모델 클래스에만 Lombok 적용, Controller/Repository/View는 미적용 — 동의하는가?
+- [ ] `Order.status`만 `@Setter`, 나머지는 불변 — 의도와 맞는가?
+- [ ] `Production.completed`만 `@Setter`, 수량/시간은 불변 — 의도와 맞는가?
+
+### 생성자 전략
+- [ ] `@AllArgsConstructor` 단일 생성자 사용 (오버로딩 없음) — 동의하는가?
+- [ ] `yield=0.0` 허용 시 생산량 계산에서 divide-by-zero 위험 → 필수 파라미터로 강제하는 방식이 맞는가?
+
+### 영향 범위
+- [ ] 기존 테스트 생성자 호출부 전체 수정이 필요한 것을 인지하는가?
